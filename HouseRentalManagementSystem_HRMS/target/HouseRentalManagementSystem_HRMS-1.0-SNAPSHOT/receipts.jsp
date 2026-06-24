@@ -7,27 +7,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HRMS - Official Receipts</title>
+    <title>Rent4Student | Receipts</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden">
     
-    <nav class="bg-blue-600 p-4 text-white flex justify-between items-center shadow-md">
-        <div class="flex gap-6 items-center">
-            <h1 class="font-bold text-xl">RentEase</h1>
-            <a href="dashboard.jsp" class="text-blue-200 hover:text-white">Dashboard</a>
-            <a href="property" class="text-blue-200 hover:text-white">Properties</a>
-            <a href="application" class="text-blue-200 hover:text-white">Applications</a>
-            <a href="rental" class="text-blue-200 hover:text-white">Rentals</a>
-            <c:if test="${sessionScope.userRole == 'student'}">
-                <a href="payment" class="text-blue-200 hover:text-white">Payments</a>
-            </c:if>
-            <a href="receipt" class="text-white font-bold border-b-2 border-white">Receipts</a>
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Rent<span class="text-orange-500">4</span>Student</h1>
+            </div>
+
+            <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
+                <a href="dashboard.jsp" class="hover:text-orange-500 transition-colors pb-1">Dashboard</a>
+                <a href="properties" class="hover:text-orange-500 transition-colors pb-1">Properties</a>
+                <a href="applicationController" class="hover:text-orange-500 transition-colors pb-1">Applications</a>
+                <a href="rentalController" class="hover:text-orange-500 transition-colors pb-1">Rentals</a>
+                <a href="receipts.jsp" class="text-orange-500 border-b-2 border-orange-500 pb-1">Receipts</a>
+                
+                <c:choose>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+                </c:choose>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-bold text-slate-800 leading-tight">
+                        <c:choose>
+                            <c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when>
+                            <c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise>
+                        </c:choose>
+                    </p>
+                    <p class="text-xs text-slate-500 capitalize">${sessionScope.userRole}</p>
+                </div>
+                <form action="auth" method="POST" class="m-0">
+                    <input type="hidden" name="action" value="logout">
+                    <button type="submit" class="bg-white hover:bg-red-50 text-red-600 border border-slate-200 font-bold py-2 px-4 rounded-xl transition-all text-sm shadow-sm">Logout</button>
+                </form>
+            </div>
         </div>
-        <form action="auth" method="POST" class="m-0">
-            <input type="hidden" name="action" value="logout">
-            <button type="submit" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-bold">Logout</button>
-        </form>
     </nav>
 
     <main class="p-8 max-w-5xl mx-auto mt-6">
