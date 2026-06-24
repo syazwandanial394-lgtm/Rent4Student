@@ -25,7 +25,6 @@
                 <a href="properties" class="hover:text-orange-500 transition-colors pb-1">Properties</a>
                 <a href="applicationController" class="hover:text-orange-500 transition-colors pb-1">Applications</a>
                 <a href="rentalController" class="hover:text-orange-500 transition-colors pb-1">Rentals</a>
-                <a href="receipts.jsp" class="text-orange-500 border-b-2 border-orange-500 pb-1">Receipts</a>
                 
                 <c:choose>
                     <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
