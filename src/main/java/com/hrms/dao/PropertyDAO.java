@@ -12,7 +12,6 @@ public class PropertyDAO {
 
     public boolean addProperty(Property p) {
         try (Connection conn = DBUtil.getConnection()) {
-            // Updated to match your exact columns
             PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO property (ho_id, property_name, property_type, description, address, city, postcode, rental_rate, availability_status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Available')"
@@ -42,8 +41,8 @@ public class PropertyDAO {
                 Property p = new Property();
                 p.setPropertyId(rs.getInt("property_id"));
                 p.setPropertyName(rs.getString("property_name"));
-                p.setPropertyType(rs.getString("property_type")); // Fetched
-                p.setDescription(rs.getString("description"));   // Fetched
+                p.setPropertyType(rs.getString("property_type")); 
+                p.setDescription(rs.getString("description"));   
                 p.setCity(rs.getString("city"));
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
@@ -76,7 +75,8 @@ public class PropertyDAO {
         return list;
     }
 
-    public List<Property> searchProperties(String location, Double maxPrice) {
+    // QOL ITEM 4: Added houseType to parameters
+    public List<Property> searchProperties(String location, Double maxPrice, String houseType) {
         List<Property> list = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT * FROM property WHERE 1=1");
         
@@ -85,6 +85,10 @@ public class PropertyDAO {
         }
         if (maxPrice != null && maxPrice > 0) {
             query.append(" AND rental_rate <= ?");
+        }
+        // QOL ITEM 4: Filter by Property Type in the SQL query
+        if (houseType != null && !houseType.trim().isEmpty() && !"Any".equalsIgnoreCase(houseType)) {
+            query.append(" AND property_type = ?");
         }
         
         try (Connection conn = DBUtil.getConnection()) {
@@ -96,6 +100,9 @@ public class PropertyDAO {
             }
             if (maxPrice != null && maxPrice > 0) {
                 ps.setDouble(paramIndex++, maxPrice);
+            }
+            if (houseType != null && !houseType.trim().isEmpty() && !"Any".equalsIgnoreCase(houseType)) {
+                ps.setString(paramIndex++, houseType);
             }
             
             ResultSet rs = ps.executeQuery();

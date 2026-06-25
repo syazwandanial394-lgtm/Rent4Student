@@ -24,7 +24,6 @@ public class RentalDAO {
     public List<Rental> getRentalsByStudent(int studentId) {
         List<Rental> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
-            // FIX: Added 'p.rental_rate' to the SELECT statement!
             PreparedStatement ps = conn.prepareStatement(
                 "SELECT r.*, p.property_name, p.rental_rate, s.full_name " +
                 "FROM rental r " +
@@ -43,7 +42,9 @@ public class RentalDAO {
                 r.setStudentName(rs.getString("full_name"));
                 r.setStartDate(rs.getString("start_date"));
                 
-                // Now Java can successfully pull this without crashing!
+                // QOL Item 1 & 8: Fetch end date
+                r.setEndDate(rs.getString("end_date")); 
+                
                 r.setRentalRate(rs.getDouble("rental_rate")); 
                 
                 String dbStatus = rs.getString("status");
@@ -61,7 +62,6 @@ public class RentalDAO {
     public List<Rental> getRentalsByOwner(int hoId) {
         List<Rental> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
-            // FIX: Added 'p.rental_rate' to the SELECT statement!
             PreparedStatement ps = conn.prepareStatement(
                 "SELECT r.*, p.property_name, p.rental_rate, s.full_name " +
                 "FROM rental r " +
@@ -80,7 +80,9 @@ public class RentalDAO {
                 r.setStudentName(rs.getString("full_name"));
                 r.setStartDate(rs.getString("start_date"));
                 
-                // Now Java can successfully pull this without crashing!
+                // QOL Item 1 & 8: Fetch end date
+                r.setEndDate(rs.getString("end_date")); 
+                
                 r.setRentalRate(rs.getDouble("rental_rate")); 
                 
                 String dbStatus = rs.getString("status");

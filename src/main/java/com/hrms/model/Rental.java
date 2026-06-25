@@ -7,6 +7,7 @@ public class Rental {
     private String propertyName;
     private String studentName;
     private String startDate;
+    private String endDate; // QOL Item 1 & 8: Added End Date
     private double rentalRate;
     
     // NEW FIELDS FOR TERMINATION
@@ -30,6 +31,10 @@ public class Rental {
 
     public String getStartDate() { return startDate; }
     public void setStartDate(String startDate) { this.startDate = startDate; }
+
+    // QOL Item 1 & 8: End Date Getters and Setters
+    public String getEndDate() { return endDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
 
     public double getRentalRate() { return rentalRate; }
     public void setRentalRate(double rentalRate) { this.rentalRate = rentalRate; }

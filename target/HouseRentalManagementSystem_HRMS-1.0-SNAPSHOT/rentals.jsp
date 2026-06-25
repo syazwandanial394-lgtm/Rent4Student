@@ -16,7 +16,7 @@
         .modal-enter-active { opacity: 1; transform: scale(1); }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
 
     <div class="absolute top-40 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
 
@@ -28,13 +28,13 @@
             </div>
             
             <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
-                <a href="dashboard" class="hover:text-orange-500 transition-colors pb-1">Dashboard</a>
-                <a href="properties" class="hover:text-orange-500 transition-colors pb-1">Properties</a>
-                <a href="applicationController" class="hover:text-orange-500 transition-colors pb-1">Applications</a>
+                <a href="dashboard" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Dashboard</a>
+                <a href="properties" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Properties</a>
+                <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
                 <a href="rentalController" class="text-orange-500 border-b-2 border-orange-500 pb-1">Rentals</a>
                 <c:choose>
-                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
                 </c:choose>
             </div>
             
@@ -90,7 +90,6 @@
                         <div class="flex justify-between text-sm"><span class="text-slate-500">Monthly Rent:</span><span class="font-black text-orange-600">RM ${rental.rentalRate}</span></div>
                     </div>
 
-                    <!-- Owner View: Approve Termination -->
                     <c:if test="${sessionScope.userRole == 'owner' && rental.status == 'Termination_Requested'}">
                         <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6">
                             <p class="text-xs font-bold text-red-500 uppercase mb-1">Reason for Termination</p>
@@ -106,7 +105,7 @@
                     </c:if>
 
                     <div class="border-t border-slate-100 pt-6">
-                        <button type="button" onclick="openAgreementModal('${rental.rentalId}', '${rental.propertyName}', '${rental.studentName}', '${rental.startDate}', '${rental.rentalRate}', '${rental.status}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">View Agreement Details</button>
+                        <button type="button" onclick="openAgreementModal('${rental.rentalId}', '${rental.propertyName}', '${rental.studentName}', '${rental.startDate}', '${empty rental.endDate ? 'Ongoing' : rental.endDate}', '${rental.rentalRate}', '${rental.status}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">View Agreement Details</button>
                     </div>
                 </div>
             </c:forEach>
@@ -130,7 +129,10 @@
                         <div><span class="block text-xs font-bold text-slate-400 uppercase">Property</span> <span class="font-bold text-slate-900 text-base" id="modalPropName">--</span></div>
                         <div><span class="block text-xs font-bold text-slate-400 uppercase">Tenant</span> <span class="font-bold text-slate-900 text-base" id="modalTenantName">--</span></div>
                         <div><span class="block text-xs font-bold text-slate-400 uppercase">Commencement Date</span> <span class="font-bold text-slate-900 text-base" id="modalStartDate">--</span></div>
-                        <div><span class="block text-xs font-bold text-slate-400 uppercase">Monthly Rent</span> <span class="font-black text-orange-600 text-base" id="modalRent">--</span></div>
+                        
+                        <div><span class="block text-xs font-bold text-slate-400 uppercase">End Date</span> <span class="font-bold text-slate-900 text-base" id="modalEndDate">--</span></div>
+                        
+                        <div class="col-span-2"><span class="block text-xs font-bold text-slate-400 uppercase">Monthly Rent</span> <span class="font-black text-orange-600 text-base" id="modalRent">--</span></div>
                     </div>
                 </div>
                 <div>
@@ -144,7 +146,6 @@
                 </div>
             </div>
 
-            <!-- Termination Section at the bottom of the agreement -->
             <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
                 <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Electronically Verified</p>
                 
@@ -178,22 +179,17 @@
         </div>
     </div>
 
+    <!-- DRAWER -->
     <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300"></div>
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner">
-                    <c:choose>
-                        <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
-                        <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
-                    </c:choose>
+                    <c:choose><c:when test="${sessionScope.userRole == 'admin'}">A</c:when><c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise></c:choose>
                 </div>
                 <div>
                     <p class="font-bold text-slate-900 leading-tight">
-                        <c:choose>
-                            <c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when>
-                            <c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise>
-                        </c:choose>
+                        <c:choose><c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when><c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise></c:choose>
                     </p>
                     <p class="text-xs font-bold text-orange-500 uppercase tracking-widest mt-1">${sessionScope.userRole}</p>
                 </div>
@@ -205,10 +201,12 @@
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
                 My Profile Settings
             </a>
-            <a href="dashboard" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                Dashboard Home
-            </a>
+            <c:if test="${sessionScope.userRole == 'owner'}">
+                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                    My Property Info
+                </a>
+            </c:if>
         </div>
         <div class="p-6 border-t border-slate-100 bg-slate-50">
             <form action="auth" method="POST" class="m-0">
@@ -223,10 +221,11 @@
         const agContent = document.getElementById('agreementContent');
         const tBtnContainer = document.getElementById('terminateBtnContainer');
 
-        function openAgreementModal(rentalId, propName, tenantName, startDate, rent, status) {
+        function openAgreementModal(rentalId, propName, tenantName, startDate, endDate, rent, status) {
             document.getElementById('modalPropName').innerText = propName;
             document.getElementById('modalTenantName').innerText = tenantName;
             document.getElementById('modalStartDate').innerText = startDate;
+            document.getElementById('modalEndDate').innerText = endDate;
             document.getElementById('modalRent').innerText = "RM " + rent;
             
             if(tBtnContainer) {
@@ -250,7 +249,7 @@
         const tReqContent = document.getElementById('termRequestContent');
         
         function openTermRequest(rentalId) {
-            closeAgreement(); // Hide the background agreement
+            closeAgreement();
             document.getElementById('termRentalId').value = rentalId;
             tReqModal.classList.remove('hidden');
             setTimeout(() => { tReqContent.classList.add('modal-enter-active'); }, 10);

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <c:if test="${empty sessionScope.userRole}">
     <c:redirect url="login.jsp"/>
 </c:if>
@@ -25,22 +26,22 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
 
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
     <div class="absolute top-40 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
 
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm relative z-[60]">
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
                 <h1 class="text-2xl font-black text-slate-900 tracking-tight">Rent<span class="text-orange-500">4</span>Student</h1>
             </div>
             <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
-                <a href="dashboard" class="hover:text-orange-500 transition-colors pb-1">Dashboard</a>
-                <a href="properties" class="hover:text-orange-500 transition-colors pb-1">Properties</a>
-                <a href="applicationController" class="hover:text-orange-500 transition-colors pb-1">Applications</a>
-                <a href="rentalController" class="hover:text-orange-500 transition-colors pb-1">Rentals</a>
+                <a href="dashboard" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Dashboard</a>
+                <a href="properties" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Properties</a>
+                <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
+                <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <a href="paymentController" class="text-orange-500 border-b-2 border-orange-500 pb-1">Payments</a>
             </div>
             <div class="flex items-center gap-4">
@@ -94,10 +95,23 @@
                                 <c:forEach items="${activeRentals}" var="rental">
                                     <input type="hidden" name="rentalId" value="${rental.rentalId}">
                                     <input type="hidden" name="amount" value="${rental.rentalRate}">
+                                    
                                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4">
                                         <p class="text-xs font-bold text-slate-400 uppercase mb-1">Paying Rent For</p>
                                         <p class="font-bold text-slate-800">${rental.propertyName}</p>
-                                        <div class="mt-3 flex justify-between items-center border-t border-slate-200 pt-3"><span class="text-sm font-bold text-slate-500">Amount Due:</span><span class="text-lg font-black text-orange-600">RM ${rental.rentalRate}</span></div>
+                                        
+                                        <div class="mt-3 flex justify-between items-center border-t border-slate-200 pt-3">
+                                            <span class="text-sm font-bold text-slate-500">Base Rent:</span>
+                                            <span class="text-md font-bold text-slate-700">RM <fmt:formatNumber value="${rental.rentalRate}" pattern="0.00"/></span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-1">
+                                            <span class="text-sm font-bold text-slate-500">Service Fee (3%):</span>
+                                            <span class="text-md font-bold text-slate-700">+ RM <fmt:formatNumber value="${rental.rentalRate * 0.03}" pattern="0.00"/></span>
+                                        </div>
+                                        <div class="mt-3 flex justify-between items-center border-t border-slate-200 pt-3">
+                                            <span class="text-sm font-black text-slate-900">Total Due:</span>
+                                            <span class="text-xl font-black text-orange-600">RM <fmt:formatNumber value="${rental.rentalRate * 1.03}" pattern="0.00"/></span>
+                                        </div>
                                     </div>
                                 </c:forEach>
                                 <div>
@@ -136,7 +150,9 @@
                                         <td class="p-5 text-slate-500 text-sm">${pay.paymentDate}</td>
                                         <td class="p-5 text-slate-600 text-sm truncate max-w-[150px]">${pay.propertyName}</td>
                                         <td class="p-5"><span class="bg-green-100 text-green-700 font-bold text-xs px-3 py-1 rounded-full">${pay.paymentStatus}</span></td>
-                                        <td class="p-5 text-right font-black text-slate-900">RM ${pay.amount}</td>
+                                        
+                                        <td class="p-5 text-right font-black text-slate-900">RM <fmt:formatNumber value="${pay.amount * 1.03}" pattern="0.00"/></td>
+                                        
                                         <td class="p-5 text-center"><button type="button" onclick="openReceiptModal('PAY-${pay.paymentId}', '${pay.paymentDate}', '${pay.propertyName}', '${pay.amount}', '${pay.paymentMethod}')" class="text-orange-500 hover:text-orange-700 font-bold text-sm underline transition-colors">View Receipt</button></td>
                                     </tr>
                                 </c:forEach>
@@ -172,7 +188,11 @@
                 <div class="flex justify-between"><span class="text-slate-500 font-bold uppercase text-xs">Date & Time</span><span class="font-bold text-slate-800" id="recDate">--</span></div>
                 <div class="flex justify-between"><span class="text-slate-500 font-bold uppercase text-xs">Payment Method</span><span class="font-bold text-slate-800" id="recMethod">--</span></div>
                 <div class="flex justify-between"><span class="text-slate-500 font-bold uppercase text-xs">Property</span><span class="font-bold text-slate-800 text-right max-w-[200px]" id="recProp">--</span></div>
-                <div class="mt-6 pt-4 border-t border-slate-200 border-dashed flex justify-between items-center"><span class="text-slate-500 font-bold uppercase text-sm">Amount Paid</span><span class="font-black text-2xl text-slate-900" id="recAmount">--</span></div>
+                
+                <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between"><span class="text-slate-500 font-bold uppercase text-xs">Base Rent</span><span class="font-bold text-slate-800" id="recBase">--</span></div>
+                <div class="flex justify-between"><span class="text-slate-500 font-bold uppercase text-xs">Service Fee (3%)</span><span class="font-bold text-slate-800" id="recFee">--</span></div>
+
+                <div class="mt-4 pt-4 border-t border-slate-200 border-dashed flex justify-between items-center"><span class="text-slate-500 font-bold uppercase text-sm">Total Paid</span><span class="font-black text-2xl text-slate-900" id="recTotal">--</span></div>
             </div>
             <div class="mt-8 pt-6 border-t border-slate-100 no-print">
                 <button onclick="window.print()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>Print Receipt</button>
@@ -184,7 +204,7 @@
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner">
+                <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner border-2 border-white overflow-hidden">
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
@@ -192,26 +212,28 @@
                 </div>
                 <div>
                     <p class="font-bold text-slate-900 leading-tight">
-                        <c:choose>
-                            <c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when>
-                            <c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise>
-                        </c:choose>
+                        <c:choose><c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when><c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise></c:choose>
                     </p>
                     <p class="text-xs font-bold text-orange-500 uppercase tracking-widest mt-1">${sessionScope.userRole}</p>
                 </div>
             </div>
             <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
+        
         <div class="p-4 flex-1 flex flex-col gap-2">
             <a href="profileController" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
                 My Profile Settings
             </a>
-            <a href="dashboard" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                Dashboard Home
-            </a>
+            
+            <c:if test="${sessionScope.userRole == 'owner'}">
+                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                    My Property Info
+                </a>
+            </c:if>
         </div>
+
         <div class="p-6 border-t border-slate-100 bg-slate-50">
             <form action="auth" method="POST" class="m-0">
                 <input type="hidden" name="action" value="logout">
@@ -229,15 +251,25 @@
 
         const rModal = document.getElementById('receiptModal');
         const rContent = document.getElementById('receiptContent');
-        function openReceiptModal(transId, date, propName, amount, method) {
+        
+        function openReceiptModal(transId, date, propName, baseAmount, method) {
             document.getElementById('recTransId').innerText = transId;
             document.getElementById('recDate').innerText = date;
             document.getElementById('recProp').innerText = propName;
-            document.getElementById('recAmount').innerText = "RM " + amount;
             document.getElementById('recMethod').innerText = method;
+
+            let base = parseFloat(baseAmount);
+            let fee = base * 0.03;
+            let total = base + fee;
+
+            document.getElementById('recBase').innerText = "RM " + base.toFixed(2);
+            document.getElementById('recFee').innerText = "RM " + fee.toFixed(2);
+            document.getElementById('recTotal').innerText = "RM " + total.toFixed(2);
+
             rModal.classList.remove('hidden');
             setTimeout(() => { rContent.classList.add('modal-enter-active'); }, 10);
         }
+
         function closeReceipt() {
             rContent.classList.remove('modal-enter-active');
             setTimeout(() => { rModal.classList.add('hidden'); }, 300);

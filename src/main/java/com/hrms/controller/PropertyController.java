@@ -49,28 +49,39 @@ public class PropertyController extends HttpServlet {
             // Get parameters
             String searchLocation = request.getParameter("searchLocation");
             String maxPriceStr = request.getParameter("maxPrice");
-            String viewAll = request.getParameter("viewAll");
+            String houseType = request.getParameter("houseType"); 
+            
             Double maxPrice = (maxPriceStr != null && !maxPriceStr.trim().isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
+            
+            // Clean up empty string
+            if (searchLocation != null && searchLocation.trim().isEmpty()) {
+                searchLocation = null;
+            }
 
-            boolean hasSearchParam = (searchLocation != null && !searchLocation.trim().isEmpty()) || maxPrice != null;
+            String prefLoc = student.getPreferredLocation();
 
-            // LOGIC 1: If they manually typed something into the search bar
-            if (hasSearchParam) {
+            boolean hasFilters = (searchLocation != null) || maxPrice != null || (houseType != null && !houseType.trim().isEmpty() && !"Any".equalsIgnoreCase(houseType));
+
+            // THE COMBO FIX:
+            if (hasFilters) {
                 isSearch = true;
-                propertyList = propertyDAO.searchProperties(searchLocation, maxPrice);
+                
+                String effectiveLocation = searchLocation;
+                
+                // If they used a filter (like Studio) but left the location blank, inject their preferred location!
+                if (effectiveLocation == null && prefLoc != null && !prefLoc.trim().isEmpty()) {
+                    effectiveLocation = prefLoc;
+                    showingRecommendations = true; // Keeps the "Recommended in..." text on screen
+                }
+                
+                propertyList = propertyDAO.searchProperties(effectiveLocation, maxPrice, houseType);
             } 
-            // LOGIC 2: If they explicitly clicked the "View All" button
-            else if ("true".equals(viewAll)) {
-                propertyList = propertyDAO.getAllProperties();
-            } 
-            // LOGIC 3: DEFAULT VIEW - Only show properties matching their Preferred Location!
+            // DEFAULT VIEW
             else {
-                String prefLoc = student.getPreferredLocation();
                 if (prefLoc != null && !prefLoc.trim().isEmpty()) {
-                    propertyList = propertyDAO.searchProperties(prefLoc, null);
+                    propertyList = propertyDAO.searchProperties(prefLoc, null, null);
                     showingRecommendations = true;
                 } else {
-                    // Fallback if they haven't set a location yet
                     propertyList = propertyDAO.getAllProperties();
                 }
             }

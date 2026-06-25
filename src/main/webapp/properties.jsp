@@ -15,9 +15,18 @@
         .animation-delay-2000 { animation-delay: 2s; }
         .modal-enter { opacity: 0; transform: scale(0.95); transition: all 0.3s ease-out; }
         .modal-enter-active { opacity: 1; transform: scale(1); }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
 
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
     <div class="absolute top-40 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
@@ -30,13 +39,13 @@
             </div>
             
             <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
-                <a href="dashboard" class="nav-link hover:text-orange-500 transition-colors pb-1">Dashboard</a>
+                <a href="dashboard" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Dashboard</a>
                 <a href="properties" class="text-orange-500 border-b-2 border-orange-500 pb-1">Properties</a>
-                <a href="applicationController" class="nav-link hover:text-orange-500 transition-colors pb-1">Applications</a>
-                <a href="rentalController" class="nav-link hover:text-orange-500 transition-colors pb-1">Rentals</a>
+                <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
+                <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
-                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="nav-link hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="nav-link hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
                 </c:choose>
             </div>
             
@@ -88,22 +97,33 @@
 
         <c:if test="${sessionScope.userRole == 'student'}">
             <form action="properties" method="GET" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col md:flex-row gap-4 items-center">
+                
                 <div class="flex-1 w-full relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg></div>
-                    <input type="text" name="searchLocation" value="${param.searchLocation}" placeholder="Search by city or location..." class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all text-sm font-medium">
+                    <input type="text" name="searchLocation" value="${param.searchLocation}" placeholder="City or location..." class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all text-sm font-medium">
                 </div>
+                
+                <div class="flex-1 w-full relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </div>
+                    <select name="houseType" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all text-sm font-medium text-slate-600 appearance-none">
+                        <option value="Any" ${param.houseType == 'Any' ? 'selected' : ''}>Any Property Type</option>
+                        <option value="Apartment" ${param.houseType == 'Apartment' ? 'selected' : ''}>Apartment / Flat</option>
+                        <option value="Terrace" ${param.houseType == 'Terrace' ? 'selected' : ''}>Terrace House</option>
+                        <option value="Semi-D" ${param.houseType == 'Semi-D' ? 'selected' : ''}>Semi-D</option>
+                        <option value="Bungalow" ${param.houseType == 'Bungalow' ? 'selected' : ''}>Bungalow</option>
+                        <option value="Studio" ${param.houseType == 'Studio' ? 'selected' : ''}>Studio / Room</option>
+                    </select>
+                </div>
+
                 <div class="flex-1 w-full relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 font-bold text-sm">RM</div>
-                    <input type="number" name="maxPrice" value="${param.maxPrice}" placeholder="Max Budget per Month" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all text-sm font-medium">
+                    <input type="number" name="maxPrice" value="${param.maxPrice}" placeholder="Max Budget" min="100" max="15000" step="50" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all text-sm font-medium">
                 </div>
+                
                 <div class="w-full md:w-auto flex gap-2">
                     <button type="submit" class="flex-1 md:flex-none bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md">Search</button>
-                    
-                    <!-- NEW: Show "View All" if they are searching OR viewing recommendations -->
-                    <c:if test="${isSearch || showingRecommendations}">
-                        <a href="properties?viewAll=true" class="flex-1 md:flex-none flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-3 px-6 rounded-xl transition-all border border-blue-200 shadow-sm whitespace-nowrap">View All</a>
-                    </c:if>
-                    
                     <c:if test="${isSearch}">
                         <a href="properties" class="flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-4 rounded-xl transition-all border border-red-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></a>
                     </c:if>
@@ -111,7 +131,6 @@
             </form>
         </c:if>
 
-        <!-- DYNAMIC HEADING -->
         <c:choose>
             <c:when test="${isSearch}">
                 <h3 class="text-xl font-black text-slate-900 mb-6 border-b border-slate-200 pb-4">
@@ -131,7 +150,6 @@
             </c:otherwise>
         </c:choose>
 
-        <!-- MAIN PROPERTY GRID -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <c:forEach items="${propertyList}" var="property">
                 <div class="bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
@@ -190,14 +208,12 @@
                     <p class="text-slate-500 font-bold text-lg mb-2">No properties found matching your criteria.</p>
                     <c:if test="${showingRecommendations}">
                         <p class="text-slate-400 text-sm mb-4">We couldn't find any homes currently available in ${sessionScope.loggedUser.preferredLocation}.</p>
-                        <a href="properties?viewAll=true" class="inline-block bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-6 rounded-xl transition-colors text-sm">View All Properties Instead</a>
                     </c:if>
                 </div>
             </c:if>
         </div>
     </main>
 
-    <!-- Student Application Modal -->
     <c:if test="${sessionScope.userRole == 'student' && !hasActiveRental}">
         <div id="applicationModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal()"></div>
@@ -229,7 +245,6 @@
         </script>
     </c:if>
 
-    <!-- Owner Add Property Modal -->
     <c:if test="${sessionScope.userRole == 'owner'}">
         <div id="addPropModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAddPropModal()"></div>
@@ -239,7 +254,7 @@
                     <button onclick="closeAddPropModal()" class="text-slate-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 </div>
                 
-                <form action="properties" method="POST" class="space-y-4">
+                <form action="properties" method="POST" enctype="multipart/form-data" class="space-y-4">
                     <input type="hidden" name="action" value="addProperty">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -257,6 +272,12 @@
                                 <option value="Studio">Studio / Room</option>
                             </select>
                         </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Image (Optional)</label>
+                            <input type="file" name="propertyImage" accept="image/*" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer">
+                        </div>
+
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label>
                             <textarea name="description" rows="3" placeholder="e.g. 3 Bedrooms, fully furnished, near beach..." required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
@@ -298,7 +319,6 @@
         </script>
     </c:if>
 
-    <!-- DRAWER -->
     <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300"></div>
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
@@ -307,7 +327,9 @@
                     <c:choose><c:when test="${sessionScope.userRole == 'admin'}">A</c:when><c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise></c:choose>
                 </div>
                 <div>
-                    <p class="font-bold text-slate-900 leading-tight"><c:choose><c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when><c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise></c:choose></p>
+                    <p class="font-bold text-slate-900 leading-tight">
+                        <c:choose><c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when><c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise></c:choose>
+                    </p>
                     <p class="text-xs font-bold text-orange-500 uppercase tracking-widest mt-1">${sessionScope.userRole}</p>
                 </div>
             </div>
@@ -318,10 +340,13 @@
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
                 My Profile Settings
             </a>
-            <a href="dashboard" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                Dashboard Home
-            </a>
+            
+            <c:if test="${sessionScope.userRole == 'owner'}">
+                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                    My Property Info
+                </a>
+            </c:if>
         </div>
         <div class="p-6 border-t border-slate-100 bg-slate-50">
             <form action="auth" method="POST" class="m-0">

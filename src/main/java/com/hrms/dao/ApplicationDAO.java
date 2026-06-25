@@ -21,11 +21,13 @@ public class ApplicationDAO {
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    public String updateApplicationStatus(int applicationId, String newStatus) {
+    // QOL ITEM 7: Added remarks parameter to the method signature and SQL statement
+    public String updateApplicationStatus(int applicationId, String newStatus, String remarks) {
         try (Connection conn = DBUtil.getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("UPDATE application SET application_status = ? WHERE application_id = ?");
+            PreparedStatement ps = conn.prepareStatement("UPDATE application SET application_status = ?, remarks = ? WHERE application_id = ?");
             ps.setString(1, newStatus);
-            ps.setInt(2, applicationId);
+            ps.setString(2, remarks);
+            ps.setInt(3, applicationId);
             ps.executeUpdate();
             return "success";
         } catch (Exception e) { 
@@ -34,7 +36,8 @@ public class ApplicationDAO {
         }
     }
 
-    public String approveAndCreateRental(int applicationId) {
+    // QOL ITEM 7: Added remarks parameter to the method signature and SQL statement
+    public String approveAndCreateRental(int applicationId, String remarks) {
         try (Connection conn = DBUtil.getConnection()) {
             conn.setAutoCommit(false); 
 
@@ -45,8 +48,9 @@ public class ApplicationDAO {
             int studentId = rs.getInt("student_id");
             int propertyId = rs.getInt("property_id");
 
-            PreparedStatement psApp = conn.prepareStatement("UPDATE application SET application_status = 'Approved' WHERE application_id = ?");
-            psApp.setInt(1, applicationId);
+            PreparedStatement psApp = conn.prepareStatement("UPDATE application SET application_status = 'Approved', remarks = ? WHERE application_id = ?");
+            psApp.setString(1, remarks);
+            psApp.setInt(2, applicationId);
             psApp.executeUpdate();
 
             PreparedStatement psProp = conn.prepareStatement("UPDATE property SET availability_status = 'Unavailable' WHERE property_id = ?");
@@ -79,6 +83,10 @@ public class ApplicationDAO {
                 app.setApplicationDate(rs.getString("application_date"));
                 app.setStatus(rs.getString("application_status"));
                 app.setPropertyName(rs.getString("property_name"));
+                
+                // QOL ITEM 7: Retrieve remarks from database
+                app.setRemarks(rs.getString("remarks")); 
+                
                 list.add(app);
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -102,13 +110,16 @@ public class ApplicationDAO {
                 app.setStatus(rs.getString("application_status"));
                 app.setPropertyName(rs.getString("property_name"));
                 app.setStudentName(rs.getString("full_name"));
+                
+                // QOL ITEM 7: Retrieve remarks from database
+                app.setRemarks(rs.getString("remarks"));
+                
                 list.add(app);
             }
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
 
-    // NEW: Get a list of property IDs where the student currently has a 'Pending' application
     public List<Integer> getPendingProperties(int studentId) {
         List<Integer> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {

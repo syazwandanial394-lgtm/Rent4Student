@@ -6,6 +6,7 @@ public class Application {
     private int propertyId;
     private String applicationDate;
     private String status; // Pending, Approved, Rejected, Cancelled
+    private String remarks;
 
     // Extra fields to make displaying data on the JSP easier
     private String propertyName;
@@ -31,4 +32,7 @@ public class Application {
 
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
+    
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 }

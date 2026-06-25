@@ -16,7 +16,7 @@
         .modal-enter-active { opacity: 1; transform: scale(1); }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
 
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
 
@@ -28,13 +28,13 @@
             </div>
             
             <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
-                <a href="dashboard" class="hover:text-orange-500 transition-colors pb-1">Dashboard</a>
-                <a href="properties" class="hover:text-orange-500 transition-colors pb-1">Properties</a>
+                <a href="dashboard" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Dashboard</a>
+                <a href="properties" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Properties</a>
                 <a href="applicationController" class="text-orange-500 border-b-2 border-orange-500 pb-1">Applications</a>
-                <a href="rentalController" class="hover:text-orange-500 transition-colors pb-1">Rentals</a>
+                <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
-                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
                 </c:choose>
             </div>
             
@@ -67,14 +67,15 @@
             <p class="text-slate-500 mt-1">Track the progress of housing applications.</p>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-            <table class="w-full text-left border-collapse">
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-max">
                 <thead>
                     <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
                         <th class="p-6 font-bold">Property</th>
                         <th class="p-6 font-bold">Applicant</th>
                         <th class="p-6 font-bold">Date Applied</th>
                         <th class="p-6 font-bold">Status</th>
+                        <th class="p-6 font-bold">Remarks</th>
                         <th class="p-6 font-bold text-right">Action</th>
                     </tr>
                 </thead>
@@ -92,6 +93,10 @@
                                     <c:otherwise><span class="bg-slate-100 text-slate-700 font-bold text-xs px-3 py-1 rounded-full">${app.status}</span></c:otherwise>
                                 </c:choose>
                             </td>
+                            <td class="p-6 text-sm text-slate-500 italic max-w-[200px] truncate" title="${app.remarks}">
+                                ${empty app.remarks ? '-' : app.remarks}
+                            </td>
+                            
                             <td class="p-6 text-right">
                                 <c:if test="${app.status == 'Pending'}">
                                     <c:choose>
@@ -107,7 +112,7 @@
                             </td>
                         </tr>
                     </c:forEach>
-                    <c:if test="${empty applicationList}"><tr><td colspan="5" class="p-6 text-center text-slate-500 font-bold">No applications found.</td></tr></c:if>
+                    <c:if test="${empty applicationList}"><tr><td colspan="6" class="p-6 text-center text-slate-500 font-bold">No applications found.</td></tr></c:if>
                 </tbody>
             </table>
         </div>
@@ -115,18 +120,27 @@
 
     <div id="statusModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeStatusModal()"></div>
-        <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 w-full max-w-sm modal-enter" id="statusModalContent">
+        <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 w-full max-w-md modal-enter" id="statusModalContent">
             <div class="text-center mb-6">
                 <div id="modalIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"></div>
                 <h2 id="modalActionTitle" class="text-2xl font-black text-slate-900 tracking-tight">Action</h2>
-                <p class="text-slate-500 mt-2 text-sm leading-relaxed">Are you sure you want to perform this action for <br><strong id="modalPropName" class="text-slate-800"></strong>? <br>This cannot be undone.</p>
+                <p class="text-slate-500 mt-2 text-sm leading-relaxed">Are you sure you want to perform this action for <br><strong id="modalPropName" class="text-slate-800"></strong>?</p>
             </div>
-            <form action="applicationController" method="POST" class="flex gap-3">
+            
+            <form action="applicationController" method="POST" class="flex flex-col gap-4">
                 <input type="hidden" name="action" value="updateStatus">
                 <input type="hidden" name="applicationId" id="modalAppId" value="">
                 <input type="hidden" name="status" id="modalStatus" value="">
-                <button type="button" onclick="closeStatusModal()" class="w-1/3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-xl transition-all shadow-sm">Back</button>
-                <button type="submit" id="modalSubmitBtn" class="w-2/3 text-white font-bold py-3 rounded-xl shadow-lg transition-all">Confirm</button>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Remarks (Optional)</label>
+                    <textarea name="remarks" rows="2" placeholder="Add a note to this action..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"></textarea>
+                </div>
+
+                <div class="flex gap-3 mt-2">
+                    <button type="button" onclick="closeStatusModal()" class="w-1/3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-xl transition-all shadow-sm">Back</button>
+                    <button type="submit" id="modalSubmitBtn" class="w-2/3 text-white font-bold py-3 rounded-xl shadow-lg transition-all">Confirm</button>
+                </div>
             </form>
         </div>
     </div>
@@ -153,16 +167,21 @@
             </div>
             <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
+        
         <div class="p-4 flex-1 flex flex-col gap-2">
             <a href="profileController" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
                 My Profile Settings
             </a>
-            <a href="dashboard" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                Dashboard Home
-            </a>
+            
+            <c:if test="${sessionScope.userRole == 'owner'}">
+                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                    My Property Info
+                </a>
+            </c:if>
         </div>
+
         <div class="p-6 border-t border-slate-100 bg-slate-50">
             <form action="auth" method="POST" class="m-0">
                 <input type="hidden" name="action" value="logout">
@@ -174,6 +193,7 @@
     <script>
         const sModal = document.getElementById('statusModal');
         const sModalContent = document.getElementById('statusModalContent');
+        
         function openStatusModal(appId, propName, newStatus) {
             document.getElementById('modalAppId').value = appId;
             document.getElementById('modalStatus').value = newStatus;

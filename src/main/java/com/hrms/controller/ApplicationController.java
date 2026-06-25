@@ -64,11 +64,16 @@ public class ApplicationController extends HttpServlet {
             int appId = Integer.parseInt(request.getParameter("applicationId"));
             String newStatus = request.getParameter("status"); 
             
+            // QOL ITEM 7: Grab the remarks from the modal form
+            String remarks = request.getParameter("remarks"); 
+            
             String result = "";
             if ("Approved".equals(newStatus)) {
-                result = applicationDAO.approveAndCreateRental(appId);
+                // Pass remarks into the approval method
+                result = applicationDAO.approveAndCreateRental(appId, remarks);
             } else {
-                result = applicationDAO.updateApplicationStatus(appId, newStatus);
+                // Pass remarks into the reject/cancel method
+                result = applicationDAO.updateApplicationStatus(appId, newStatus, remarks);
             }
             
             if (!"success".equals(result)) {

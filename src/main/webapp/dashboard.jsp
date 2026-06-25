@@ -15,7 +15,7 @@
         .animation-delay-2000 { animation-delay: 2s; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
 
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
     <div class="absolute top-40 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
@@ -29,12 +29,12 @@
             
             <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
                 <a href="dashboard" class="text-orange-500 border-b-2 border-orange-500 pb-1">Dashboard</a>
-                <a href="properties" class="nav-link hover:text-orange-500 transition-colors pb-1">Properties</a>
-                <a href="applicationController" class="nav-link hover:text-orange-500 transition-colors pb-1">Applications</a>
-                <a href="rentalController" class="nav-link hover:text-orange-500 transition-colors pb-1">Rentals</a>
+                <a href="properties" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Properties</a>
+                <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
+                <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
-                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="nav-link hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="nav-link hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
                 </c:choose>
             </div>
             
@@ -52,7 +52,6 @@
     <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
         
         <c:choose>
-            <%-- If the student has a house, show this vibrant card! --%>
             <c:when test="${not empty activeRental}">
                 <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl p-10 shadow-xl shadow-orange-200/50 border border-orange-400 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
                     <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full mix-blend-overlay"></div>
@@ -64,11 +63,14 @@
                             Current Residence
                         </p>
                         <h2 class="text-4xl font-extrabold mb-2 leading-tight">${activeRental.propertyName}</h2>
-                        <p class="text-orange-100 text-lg font-medium flex items-center gap-2">
-                            <span class="bg-white/20 px-3 py-1 rounded-lg">RM ${activeRental.rentalRate} / month</span>
-                            <span class="opacity-75">•</span>
-                            <span>Started on ${activeRental.startDate}</span>
-                        </p>
+                        
+                        <div class="text-orange-100 text-lg font-medium flex flex-wrap items-center gap-3 mt-3">
+                            <span class="bg-white/20 px-3 py-1 rounded-lg shadow-sm">RM ${activeRental.rentalRate} / month</span>
+                            <span class="bg-orange-800/30 px-3 py-1 rounded-lg border border-orange-400/30">Started: ${activeRental.startDate}</span>
+                            <c:if test="${not empty activeRental.endDate}">
+                                <span class="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold shadow-sm">Ends: ${activeRental.endDate}</span>
+                            </c:if>
+                        </div>
                     </div>
                     <div class="relative z-10 shrink-0 w-full md:w-auto text-center md:text-right">
                         <a href="paymentController" class="inline-block w-full md:w-auto bg-white text-orange-600 hover:bg-orange-50 font-black py-4 px-8 rounded-xl shadow-lg transition-all mb-3 md:mb-0 md:mr-3">Pay Rent</a>
@@ -77,7 +79,6 @@
                 </div>
             </c:when>
 
-            <%-- If they DO NOT have a house (or they are an owner/admin), show the original banner --%>
             <c:otherwise>
                 <div class="bg-white rounded-3xl p-10 shadow-xl shadow-slate-200/40 border border-slate-100 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 transform hover:-translate-y-1 transition-all duration-300">
                     <div>
@@ -153,10 +154,13 @@
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
                 My Profile Settings
             </a>
-            <a href="dashboard" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                Dashboard Home
-            </a>
+            
+            <c:if test="${sessionScope.userRole == 'owner'}">
+                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                    My Property Info
+                </a>
+            </c:if>
         </div>
 
         <div class="p-6 border-t border-slate-100 bg-slate-50">
