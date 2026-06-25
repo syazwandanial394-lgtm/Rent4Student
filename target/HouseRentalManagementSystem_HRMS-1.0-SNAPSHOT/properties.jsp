@@ -36,7 +36,7 @@
                 <a href="rentalController" class="nav-link hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
                     <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="nav-link hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipt" class="nav-link hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipt" class="nav-link hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
                 </c:choose>
             </div>
             
@@ -165,7 +165,11 @@
 
                         <c:choose>
                             <c:when test="${sessionScope.userRole == 'owner'}">
-                                <button class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">Edit Listing</button>
+                                <button type="button" 
+                                        onclick="openEditModal('${property.propertyId}', '${property.propertyName}', '${property.propertyType}', '${property.address}', '${property.description}', '${property.rentalRate}', '${property.availabilityStatus}', '${property.city}', '${property.postcode}')" 
+                                        class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">
+                                    Edit Listing
+                                </button>
                             </c:when>
                             <c:when test="${sessionScope.userRole == 'student'}">
                                 <c:choose>
@@ -225,6 +229,102 @@
             function closeModal() {
                 document.getElementById('modalContent').classList.remove('modal-enter-active');
                 setTimeout(() => { document.getElementById('applicationModal').classList.add('hidden'); }, 300);
+            }
+        </script>
+    </c:if>
+        
+    <!--Owner Edit Property Modal-->
+    <c:if test="${sessionScope.userRole == 'owner'}">
+        <div id="editModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" onclick="closeEditModal()"></div>
+            <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 w-full max-w-2xl modal-enter my-8 z-10 max-h-[90vh] overflow-y-auto" id="editModalContent">
+                <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight">Edit Property</h2>
+                    <p class="text-slate-500 mt-1 text-sm">Update your listing details below.</p>
+                </div>
+
+                <form action="propertyController" method="POST" class="space-y-4">
+                    <input type="hidden" name="action" value="updateProperty">
+                    <input type="hidden" name="propertyId" id="editPropertyId" value="">
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Property Name</label>
+                            <input type="text" name="propertyName" id="editPropertyName" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Property Type</label>
+                            <input type="text" name="propertyType" id="editPropertyType" required placeholder="e.g. Apartment, Terrace" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Address</label>
+                        <textarea name="address" id="editAddress" rows="2" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Description</label>
+                        <textarea name="description" id="editDescription" rows="3" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Rental Rate (RM)</label>
+                            <input type="number" step="0.01" name="rentalRate" id="editRentalRate" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Status</label>
+                            <select name="availabilityStatus" id="editStatus" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all bg-white">
+                                <option value="Available">Available</option>
+                                <option value="Rented">Rented</option>
+                                <option value="Maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">City</label>
+                            <input type="text" name="city" id="editCity" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Postcode</label>
+                            <input type="text" name="postcode" id="editPostcode" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="closeEditModal()" class="w-1/3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-xl transition-all shadow-sm">Cancel</button>
+                        <button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openEditModal(id, name, type, address, description, rate, status, city, postcode) {
+                document.getElementById('editPropertyId').value = id;
+                document.getElementById('editPropertyName').value = name;
+                document.getElementById('editPropertyType').value = type;
+                document.getElementById('editAddress').value = address;
+                document.getElementById('editDescription').value = description;
+                document.getElementById('editRentalRate').value = rate;
+                document.getElementById('editStatus').value = status;
+                document.getElementById('editCity').value = city;
+                document.getElementById('editPostcode').value = postcode;
+
+                document.getElementById('editModal').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('editModalContent').classList.add('modal-enter-active'); }, 10);
+            }
+
+            function closeEditModal() {
+                document.getElementById('editModalContent').classList.remove('modal-enter-active');
+                setTimeout(() => { document.getElementById('editModal').classList.add('hidden'); }, 300);
             }
         </script>
     </c:if>

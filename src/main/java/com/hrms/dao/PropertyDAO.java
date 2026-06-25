@@ -32,6 +32,31 @@ public class PropertyDAO {
             return false;
         }
     }
+    
+    public boolean updateProperty(Property property) {
+        boolean rowUpdated = false;
+        String sql = "UPDATE Property SET property_name = ?, property_type = ?, address = ?, description = ?, rental_rate = ?, availability_status = ?, city = ?, postcode = ? WHERE property_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, property.getPropertyName());
+            ps.setString(2, property.getPropertyType());
+            ps.setString(3, property.getAddress());
+            ps.setString(4, property.getDescription());
+            ps.setDouble(5, property.getRentalRate());
+            ps.setString(6, property.getAvailabilityStatus());
+            ps.setString(7, property.getCity());
+            ps.setString(8, property.getPostcode());
+            ps.setInt(9, property.getPropertyId());
+
+            rowUpdated = ps.executeUpdate() > 0;
+            
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
+        return rowUpdated;
+    }
 
     public List<Property> getAllProperties() {
         List<Property> list = new ArrayList<>();
@@ -43,6 +68,7 @@ public class PropertyDAO {
                 p.setPropertyId(rs.getInt("property_id"));
                 p.setPropertyName(rs.getString("property_name"));
                 p.setPropertyType(rs.getString("property_type")); // Fetched
+                p.setAddress(rs.getString("address"));
                 p.setDescription(rs.getString("description"));   // Fetched
                 p.setCity(rs.getString("city"));
                 p.setPostcode(rs.getString("postcode"));
@@ -65,6 +91,7 @@ public class PropertyDAO {
                 p.setPropertyId(rs.getInt("property_id"));
                 p.setPropertyName(rs.getString("property_name"));
                 p.setPropertyType(rs.getString("property_type"));
+                p.setAddress(rs.getString("address"));
                 p.setDescription(rs.getString("description"));
                 p.setCity(rs.getString("city"));
                 p.setPostcode(rs.getString("postcode"));
@@ -104,6 +131,7 @@ public class PropertyDAO {
                 p.setPropertyId(rs.getInt("property_id"));
                 p.setPropertyName(rs.getString("property_name"));
                 p.setPropertyType(rs.getString("property_type"));
+                p.setAddress(rs.getString("address"));
                 p.setDescription(rs.getString("description"));
                 p.setCity(rs.getString("city"));
                 p.setPostcode(rs.getString("postcode"));

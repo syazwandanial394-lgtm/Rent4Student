@@ -109,5 +109,34 @@ public class PropertyController extends HttpServlet {
                 response.sendRedirect("properties?error=add_failed");
             }
         }
+
+        if ("updateProperty".equals(action)) {
+            try {
+                // 1. Fetch form data and populate the Property model
+                Property property = new Property();
+                property.setPropertyId(Integer.parseInt(request.getParameter("propertyId")));
+                property.setPropertyName(request.getParameter("propertyName"));
+                property.setPropertyType(request.getParameter("propertyType"));
+                property.setAddress(request.getParameter("address"));
+                property.setDescription(request.getParameter("description"));
+                property.setRentalRate(Double.parseDouble(request.getParameter("rentalRate")));
+                property.setAvailabilityStatus(request.getParameter("availabilityStatus"));
+                property.setCity(request.getParameter("city"));
+                property.setPostcode(request.getParameter("postcode"));
+
+                // 2. Call the DAO
+                boolean success = propertyDAO.updateProperty(property);
+
+                // 3. Redirect back to the properties page
+                if (success) {
+                    response.sendRedirect("properties?success=updated");
+                } else {
+                    response.sendRedirect("properties?error=update_failed");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("properties?error=invalid_input");
+            }
+        }
     }
 }
