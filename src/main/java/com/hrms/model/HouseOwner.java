@@ -7,6 +7,7 @@ public class HouseOwner {
     private String password;
     private String phoneNumber;
     private String registrationDate;
+    private String subscriptionStatus;
 
     public HouseOwner() {}
 
@@ -27,4 +28,7 @@ public class HouseOwner {
 
     public String getRegistrationDate() { return registrationDate; }
     public void setRegistrationDate(String registrationDate) { this.registrationDate = registrationDate; }
+    
+    public String getSubscriptionStatus() { return subscriptionStatus; }
+    public void setSubscriptionStatus(String subscriptionStatus) { this.subscriptionStatus = subscriptionStatus; }
 }

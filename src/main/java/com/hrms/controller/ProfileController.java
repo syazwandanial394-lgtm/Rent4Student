@@ -72,5 +72,9 @@ public class ProfileController extends HttpServlet {
                 response.sendRedirect("profileController?error=true");
             }
         }
+        
+        if ("owner".equals(role))  {
+            
+        }
     }
 }
