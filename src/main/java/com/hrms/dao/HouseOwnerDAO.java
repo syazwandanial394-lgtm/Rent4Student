@@ -38,7 +38,7 @@ public class HouseOwnerDAO {
                 owner.setPassword(rs.getString("password"));
                 owner.setPhoneNumber(rs.getString("phone_number"));
                 owner.setSubscriptionStatus(rs.getString("subscription_status"));
-                owner.setRegistrationDate(rs.getString("registration_data")); // Maps column 'registration_data' to your model
+                owner.setRegistrationDate(rs.getString("registration_date")); // Maps column 'registration_data' to your model
             }
         } catch (Exception e) {
             e.printStackTrace();
