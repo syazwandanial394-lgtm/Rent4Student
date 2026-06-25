@@ -7,27 +7,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HRMS - Official Receipts</title>
+    <title>Rent4Student - Official Receipts</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
     
-    <nav class="bg-blue-600 p-4 text-white flex justify-between items-center shadow-md">
-        <div class="flex gap-6 items-center">
-            <h1 class="font-bold text-xl">RentEase</h1>
-            <a href="dashboard.jsp" class="text-blue-200 hover:text-white">Dashboard</a>
-            <a href="property" class="text-blue-200 hover:text-white">Properties</a>
-            <a href="application" class="text-blue-200 hover:text-white">Applications</a>
-            <a href="rental" class="text-blue-200 hover:text-white">Rentals</a>
-            <c:if test="${sessionScope.userRole == 'student'}">
-                <a href="payment" class="text-blue-200 hover:text-white">Payments</a>
-            </c:if>
-            <a href="receipt" class="text-white font-bold border-b-2 border-white">Receipts</a>
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm relative z-[60]">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Rent<span class="text-orange-500">4</span>Student</h1>
+            </div>
+            
+            <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
+                <a href="dashboard" class="hover:text-orange-500 transition-colors pb-1">Dashboard</a>
+                <a href="properties" class="hover:text-orange-500 transition-colors pb-1">Properties</a>
+                <a href="applicationController" class="hover:text-orange-500 transition-colors pb-1">Applications</a>
+                <a href="rentalController" class="hover:text-orange-500 transition-colors pb-1">Rentals</a>
+                <c:choose>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipt" class="text-orange-500 border-b-2 border-orange-500 pb-1">Receipts</a></c:when>
+                </c:choose>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="toggleProfileDrawer()" class="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-500 text-white font-black flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 transition-all outline-none focus:ring-4 focus:ring-orange-200">
+                    <c:choose>
+                        <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
+                        <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
+                    </c:choose>
+                </button>
+            </div>
         </div>
-        <form action="auth" method="POST" class="m-0">
-            <input type="hidden" name="action" value="logout">
-            <button type="submit" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-bold">Logout</button>
-        </form>
     </nav>
 
     <main class="p-8 max-w-5xl mx-auto mt-6">
@@ -74,5 +85,20 @@
             </table>
         </div>
     </main>
+    <script>
+        function toggleProfileDrawer() {
+            const drawer = document.getElementById('profileDrawer');
+            const backdrop = document.getElementById('profileBackdrop');
+            if (drawer.classList.contains('translate-x-full')) {
+                backdrop.classList.remove('hidden');
+                setTimeout(() => { backdrop.classList.remove('opacity-0'); }, 10);
+                drawer.classList.remove('translate-x-full');
+            } else {
+                backdrop.classList.add('opacity-0');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
+            }
+        }
+    </script>
 </body>
 </html>
