@@ -147,12 +147,12 @@
             <!-- Termination Section at the bottom of the agreement -->
             <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
                 <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Electronically Verified</p>
-                
-                <c:if test="${sessionScope.userRole == 'student'}">
-                    <div id="terminateBtnContainer">
-                        <!-- Filled via JavaScript depending on status -->
-                    </div>
-                </c:if>
+
+                    <c:if test="${sessionScope.userRole == 'student'}">
+                        <div id="terminateBtnContainer">
+                            <!-- Filled via JavaScript depending on status -->
+                        </div>
+                    </c:if>
             </div>
         </div>
     </div>
@@ -177,7 +177,7 @@
             </form>
         </div>
     </div>
-
+    
     <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300"></div>
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
@@ -236,7 +236,7 @@
                     tBtnContainer.innerHTML = `<span class="bg-red-100 text-red-700 font-bold px-4 py-2 rounded-lg text-sm">Termination Pending Owner Approval...</span>`;
                 }
             }
-
+            
             agModal.classList.remove('hidden');
             setTimeout(() => { agContent.classList.add('modal-enter-active'); }, 10);
         }
@@ -260,7 +260,7 @@
             tReqContent.classList.remove('modal-enter-active');
             setTimeout(() => { tReqModal.classList.add('hidden'); }, 300);
         }
-
+        
         function toggleProfileDrawer() {
             const drawer = document.getElementById('profileDrawer');
             const backdrop = document.getElementById('profileBackdrop');
