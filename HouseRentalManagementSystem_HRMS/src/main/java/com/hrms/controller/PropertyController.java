@@ -53,4 +53,48 @@ public class PropertyController extends HttpServlet {
         request.setAttribute("pendingProps", pendingProps); // Send to JSP
         request.getRequestDispatcher("properties.jsp").forward(request, response);
     }
+
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("userRole");
+
+        // Extra security check: Only owners should be able to post updates
+        if (!"owner".equals(role)) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String action = request.getParameter("action");
+
+        if ("updateProperty".equals(action)) {
+            try {
+                // 1. Fetch form data and populate the Property model
+                Property property = new Property();
+                property.setPropertyId(Integer.parseInt(request.getParameter("propertyId")));
+                property.setPropertyName(request.getParameter("propertyName"));
+                property.setPropertyType(request.getParameter("propertyType"));
+                property.setAddress(request.getParameter("address"));
+                property.setDescription(request.getParameter("description"));
+                property.setRentalRate(Double.parseDouble(request.getParameter("rentalRate")));
+                property.setAvailabilityStatus(request.getParameter("availabilityStatus"));
+                property.setCity(request.getParameter("city"));
+                property.setPostcode(request.getParameter("postcode"));
+
+                // 2. Call the DAO
+                boolean success = propertyDAO.updateProperty(property);
+
+                // 3. Redirect back to the properties page
+                if (success) {
+                    response.sendRedirect("properties?success=updated");
+                } else {
+                    response.sendRedirect("properties?error=update_failed");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("properties?error=invalid_input");
+            }
+        }
+    }
 }
