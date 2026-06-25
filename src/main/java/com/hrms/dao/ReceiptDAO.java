@@ -27,10 +27,44 @@ public class ReceiptDAO {
                 // Keep these aligned with your updated database columns
                 r.setReceiptStatus(rs.getString("receipt_status")); 
                 r.setPaymentId(rs.getInt("payment_id"));            
-                
+                r.setHoId(rs.getInt("ho_id"));
                 list.add(r);
             }
         } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+    
+    public List<Receipt> getReceiptsByOwner(int hoId) {
+        List<Receipt> list = new ArrayList<>();
+        String sql = "SELECT * FROM receipt WHERE ho_id = ? ORDER BY issue_date DESC";
+
+        try (Connection conn = DBUtil.getConnection()) {
+            // 1. Prepare the statement with our filtered SQL query
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            // 2. Bind the incoming hoId to the '?' placeholder safely
+            ps.setInt(1, hoId);
+
+            // 3. Execute the query
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Receipt r = new Receipt();
+                r.setReceiptId(rs.getInt("receipt_id"));
+                r.setAmountPaid(rs.getDouble("amount_paid"));
+                r.setIssueDate(rs.getString("issue_date"));
+                r.setPaymentMethod(rs.getString("payment_method"));
+                r.setReceiptStatus(rs.getString("receipt_status")); 
+                r.setPaymentId(rs.getInt("payment_id"));            
+                r.setHoId(rs.getInt("ho_id"));
+                // If your Receipt model has a houseOwnerId field, map it here as well:
+                // r.setHouseOwnerId(rs.getInt("ho_id"));
+
+                list.add(r);
+            }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
         return list;
     }
 }

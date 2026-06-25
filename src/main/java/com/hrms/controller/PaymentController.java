@@ -45,11 +45,13 @@ public class PaymentController extends HttpServlet {
         if ("payRent".equals(action)) {
             int rentalId = Integer.parseInt(request.getParameter("rentalId"));
             double amount = Double.parseDouble(request.getParameter("amount"));
+            int houseOwnerId= Integer.parseInt(request.getParameter("houseOwnerId"));
             String method = request.getParameter("paymentMethod");
 
             Payment p = new Payment();
             p.setRentalId(rentalId);
             p.setAmount(amount);
+            p.setHouseOwnerId(houseOwnerId);
             p.setPaymentMethod(method);
             
             // Catch the response

@@ -94,6 +94,7 @@
                                 <c:forEach items="${activeRentals}" var="rental">
                                     <input type="hidden" name="rentalId" value="${rental.rentalId}">
                                     <input type="hidden" name="amount" value="${rental.rentalRate}">
+                                    <input type="hidden" name="houseOwnerId" value="${rental.hoId}">
                                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4">
                                         <p class="text-xs font-bold text-slate-400 uppercase mb-1">Paying Rent For</p>
                                         <p class="font-bold text-slate-800">${rental.propertyName}</p>

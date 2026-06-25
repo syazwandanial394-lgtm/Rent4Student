@@ -18,8 +18,8 @@ public class PaymentDAO {
         String sqlPayment = "INSERT INTO payment (rental_id, amount, payment_date, due_date, payment_method, payment_status) " +
                             "VALUES (?, ?, NOW(), CURDATE(), ?, 'Completed')";
                             
-        String sqlReceipt = "INSERT INTO receipt (issue_date, amount_paid, receipt_status, payment_method, payment_id) " +
-                            "VALUES (NOW(), ?, 'Issued', ?, ?)";
+        String sqlReceipt = "INSERT INTO receipt (issue_date, amount_paid, receipt_status, payment_method, payment_id, ho_id) " +
+                            "VALUES (NOW(), ?, 'Issued', ?, ?, ?)";
 
         // Try-with-resources automatically closes the connection when done
         try (Connection conn = DBUtil.getConnection()) {
@@ -49,6 +49,7 @@ public class PaymentDAO {
                 psReceipt.setDouble(1, p.getAmount());
                 psReceipt.setString(2, p.getPaymentMethod());
                 psReceipt.setInt(3, generatedPaymentId);
+                psReceipt.setInt(4, p.getHouseOwnerId());
                 psReceipt.executeUpdate();
 
                 // If both operations succeed, commit them together to the database

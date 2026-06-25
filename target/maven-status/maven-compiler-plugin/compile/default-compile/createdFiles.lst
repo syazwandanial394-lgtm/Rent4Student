@@ -21,4 +21,5 @@ com\hrms\controller\PropertyController.class
 com\hrms\model\Payment.class
 com\hrms\config\DBUtil.class
 com\hrms\model\HouseOwner.class
+com\hrms\dao\HouseOwnerDAO.class
 com\hrms\dao\StudentDAO.class

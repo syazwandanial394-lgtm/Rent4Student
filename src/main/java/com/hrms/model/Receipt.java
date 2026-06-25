@@ -7,6 +7,7 @@ public class Receipt {
     private String receiptStatus;
     private String paymentMethod;
     private int paymentId;
+    private int hoId;
 
     public Receipt() {}
 
@@ -27,4 +28,7 @@ public class Receipt {
 
     public int getPaymentId() { return paymentId; }
     public void setPaymentId(int paymentId) { this.paymentId = paymentId; }
+    
+    public int getHoId() { return hoId; }
+    public void setHoId(int hoId) { this.hoId = hoId; }
 }

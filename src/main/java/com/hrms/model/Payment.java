@@ -4,6 +4,7 @@ public class Payment {
     private int paymentId;
     private int rentalId;
     private double amount;
+    private int houseOwnerId;
     private String paymentDate;
     private String dueDate;
     private String paymentMethod;
@@ -21,6 +22,9 @@ public class Payment {
 
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }
+    
+    public int getHouseOwnerId() { return houseOwnerId; }
+    public void setHouseOwnerId(int houseOwnerId) { this.houseOwnerId = houseOwnerId; }
 
     public String getPaymentDate() { return paymentDate; }
     public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }

@@ -26,7 +26,7 @@ public class RentalDAO {
         try (Connection conn = DBUtil.getConnection()) {
             // FIX: Added 'p.rental_rate' to the SELECT statement!
             PreparedStatement ps = conn.prepareStatement(
-                "SELECT r.*, p.property_name, p.rental_rate, s.full_name " +
+                "SELECT r.*, p.property_name, p.rental_rate, p.ho_id, s.full_name " +
                 "FROM rental r " +
                 "JOIN property p ON r.property_id = p.property_id " +
                 "JOIN student s ON r.student_id = s.student_id " +
@@ -45,6 +45,7 @@ public class RentalDAO {
                 
                 // Now Java can successfully pull this without crashing!
                 r.setRentalRate(rs.getDouble("rental_rate")); 
+                r.setHoId(rs.getInt("ho_id"));
                 
                 String dbStatus = rs.getString("status");
                 r.setStatus(dbStatus == null ? "Active" : dbStatus);

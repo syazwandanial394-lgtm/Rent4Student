@@ -1,7 +1,9 @@
 package com.hrms.controller;
 
+import com.hrms.dao.HouseOwnerDAO;
 import com.hrms.dao.StudentDAO;
 import com.hrms.model.Student;
+import com.hrms.model.HouseOwner;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,6 +15,7 @@ import java.io.IOException;
 @WebServlet("/profileController")
 public class ProfileController extends HttpServlet {
     private StudentDAO studentDAO = new StudentDAO();
+    private HouseOwnerDAO houseOwnerDAO = new HouseOwnerDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,6 +35,15 @@ public class ProfileController extends HttpServlet {
             }
         }
 
+        else if ("owner".equals(role)) {
+            HouseOwner currentSessionOwner = (HouseOwner) session.getAttribute("loggedUser");
+            // Pulls the fresh profile out of the DB using the DAO we just created
+            HouseOwner freshDbOwner = houseOwnerDAO.getHouseOwnerById(currentSessionOwner.getHoId());
+            if (freshDbOwner != null) {
+                session.setAttribute("loggedUser", freshDbOwner); // Re-seals the fresh data into the session
+            }
+        }
+        
         request.getRequestDispatcher("profile.jsp").forward(request, response);
     }
 
@@ -73,8 +85,38 @@ public class ProfileController extends HttpServlet {
             }
         }
         
-        if ("owner".equals(role))  {
-            
+        // ==========================================
+        // 2. HOUSE OWNER PROFILE LOGIC (NEW)
+        // ==========================================
+        else if ("owner".equals(role)) {
+            HouseOwner owner = (HouseOwner) session.getAttribute("loggedUser");
+
+            // Handle House Owner Account Deletion
+            if ("deleteAccount".equals(action)) {
+                // Note: Verify your DAO method name for deleting an owner account
+                if (houseOwnerDAO.deleteHouseOwnerAccount(owner.getHoId())) {
+                    session.invalidate(); 
+                    response.sendRedirect("login.jsp?success=deleted"); 
+                    return;
+                } else {
+                    response.sendRedirect("profileController?error=delete_failed");
+                    return;
+                }
+            }
+
+            // Normal House Owner Profile Update Logic
+            owner.setFullName(request.getParameter("fullName"));
+            owner.setEmail(request.getParameter("email"));
+            owner.setPhoneNumber(request.getParameter("phoneNumber"));
+            // Registration date and subscription status are managed by the system, so they are excluded here
+
+            // Note: Verify your DAO method name for updating an owner profile
+            if (houseOwnerDAO.updateHouseOwnerProfile(owner)) {
+                session.setAttribute("loggedUser", owner); // Keep session data fresh
+                response.sendRedirect("profileController?success=true");
+            } else {
+                response.sendRedirect("profileController?error=true");
+            }
         }
     }
 }
