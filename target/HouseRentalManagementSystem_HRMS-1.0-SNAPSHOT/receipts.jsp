@@ -26,7 +26,7 @@
                 <a href="rentalController" class="hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
                     <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipt" class="text-orange-500 border-b-2 border-orange-500 pb-1">Receipts</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipt" class="text-orange-500 border-b-2 border-orange-500 pb-1">Revenue</a></c:when>
                 </c:choose>
             </div>
             
@@ -44,7 +44,7 @@
     <main class="p-8 max-w-5xl mx-auto mt-6">
         
         <div class="flex justify-between items-end mb-8">
-            <h2 class="text-3xl font-extrabold text-gray-800">Official Receipts</h2>
+            <h2 class="text-3xl font-extrabold text-gray-800">Official Revenue</h2>
             <button onclick="window.print()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                 Print Ledger
