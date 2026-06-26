@@ -34,8 +34,8 @@
                 <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
                 <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
-                <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
                 </c:choose>
             </div>
             <div class="flex items-center gap-2">
@@ -57,10 +57,10 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        <c:if test="${param.success == 'added'}">
+        <c:if test="${param.success == 'added' || param.success == 'updated'}">
             <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 flex items-center gap-4 shadow-sm">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <p class="text-green-700 text-sm font-bold">Property successfully listed!</p>
+                <p class="text-green-700 text-sm font-bold">Property successfully ${param.success}!</p>
             </div>
         </c:if>
 
@@ -140,8 +140,8 @@
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg> Match
                         </div>
                     </c:if>
-                    <div class="h-40 bg-slate-200 relative">
-                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover" alt="House">
+                    <div class="h-48 bg-slate-200 relative">
+                        <img src="${not empty property.propertyImage ? property.propertyImage : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover" alt="House">
                         <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black uppercase shadow-sm ${property.availabilityStatus == 'Available' ? 'text-green-600' : 'text-red-600'}">${property.availabilityStatus}</div>
                     </div>
                     <div class="p-6">
@@ -155,12 +155,27 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${property.city}, ${property.postcode}
                         </p>
                         <c:choose>
-                            <c:when test="${sessionScope.userRole == 'owner'}"><button class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">Edit Listing</button></c:when>
+                            <c:when test="${sessionScope.userRole == 'owner'}">
+                                <button type="button" 
+                                        onclick="openEditPropModal(this)"
+                                        data-id="${property.propertyId}"
+                                        data-name="<c:out value='${property.propertyName}'/>"
+                                        data-type="${property.propertyType}"
+                                        data-rate="${property.rentalRate}"
+                                        data-city="<c:out value='${property.city}'/>"
+                                        data-postcode="${property.postcode}"
+                                        data-address="<c:out value='${property.address}'/>"
+                                        data-desc="<c:out value='${property.description}'/>"
+                                        data-status="${property.availabilityStatus}"
+                                        class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">
+                                    Edit Listing
+                                </button>
+                            </c:when>
                             <c:when test="${sessionScope.userRole == 'student'}">
                                 <c:choose>
                                     <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed">Currently Rented</button></c:when>
                                     <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed">Application Pending</button></c:when>
-                                    <c:otherwise><button type="button" onclick="openModal('${property.propertyId}', '${property.propertyName}')" class="w-full ${showingRecommendations ? 'bg-orange-500 hover:bg-orange-600' : 'bg-slate-900 hover:bg-slate-800'} text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
+                                    <c:otherwise><button type="button" onclick="openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')" class="w-full ${showingRecommendations ? 'bg-orange-500 hover:bg-orange-600' : 'bg-slate-900 hover:bg-slate-800'} text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
                                 </c:choose>
                             </c:when>
                         </c:choose>
@@ -210,44 +225,19 @@
                 <form action="properties" method="POST" enctype="multipart/form-data" class="space-y-4">
                     <input type="hidden" name="action" value="addProperty">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Name</label>
-                            <input type="text" name="propertyName" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Name</label><input type="text" name="propertyName" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Type</label>
                             <select name="propertyType" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                                <option value="Apartment">Apartment / Flat</option>
-                                <option value="Terrace">Terrace House</option>
-                                <option value="Semi-D">Semi-D</option>
-                                <option value="Bungalow">Bungalow</option>
-                                <option value="Studio">Studio / Room</option>
+                                <option value="Apartment">Apartment / Flat</option><option value="Terrace">Terrace House</option><option value="Semi-D">Semi-D</option><option value="Bungalow">Bungalow</option><option value="Studio">Studio / Room</option>
                             </select>
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Image (Optional)</label>
-                            <input type="file" name="propertyImage" accept="image/*" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label>
-                            <textarea name="description" rows="3" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Full Address</label>
-                            <input type="text" name="address" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">City</label>
-                            <input type="text" name="city" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Postcode</label>
-                            <input type="text" name="postcode" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Monthly Rent (RM)</label>
-                            <input type="number" step="0.01" name="rentalRate" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Image (Optional)</label><input type="file" name="propertyImage" accept="image/*" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label><textarea name="description" rows="3" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Full Address</label><input type="text" name="address" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">City</label><input type="text" name="city" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Postcode</label><input type="text" name="postcode" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Monthly Rent (RM)</label><input type="number" step="0.01" name="rentalRate" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
                     </div>
                     <div class="pt-4 mt-2 border-t border-slate-100 flex justify-end gap-3">
                         <button type="button" onclick="closeAddPropModal()" class="px-6 py-3 font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
@@ -256,9 +246,75 @@
                 </form>
             </div>
         </div>
+
+        <div id="editPropModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeEditPropModal()"></div>
+            <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 w-full max-w-2xl modal-enter max-h-[90vh] overflow-y-auto" id="editPropContent">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-slate-900">Edit Property Details</h2>
+                    <button onclick="closeEditPropModal()" class="text-slate-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+                <form action="properties" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <input type="hidden" name="action" value="updateProperty">
+                    <input type="hidden" name="propertyId" id="editPropId" value="">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Name</label><input type="text" id="editPropName" name="propertyName" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Type</label>
+                            <select name="propertyType" id="editPropType" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="Apartment">Apartment / Flat</option><option value="Terrace">Terrace House</option><option value="Semi-D">Semi-D</option><option value="Bungalow">Bungalow</option><option value="Studio">Studio / Room</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Update Image (Leave blank to keep current)</label>
+                            <input type="file" name="propertyImage" accept="image/*" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer">
+                        </div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label><textarea name="description" id="editPropDesc" rows="3" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Full Address</label><input type="text" name="address" id="editPropAddress" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">City</label><input type="text" name="city" id="editPropCity" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Postcode</label><input type="text" name="postcode" id="editPropPostcode" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Monthly Rent (RM)</label><input type="number" step="0.01" name="rentalRate" id="editPropRate" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Availability Status</label>
+                            <select name="availabilityStatus" id="editPropStatus" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="Available">Available (Visible to Students)</option>
+                                <option value="Unavailable">Unavailable (Hidden/Rented)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pt-4 mt-2 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" onclick="closeEditPropModal()" class="px-6 py-3 font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
+                        <button type="submit" class="px-6 py-3 font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-md">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <script>
             function openAddPropModal() { document.getElementById('addPropModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('addPropContent').classList.add('modal-enter-active'); }, 10); }
             function closeAddPropModal() { document.getElementById('addPropContent').classList.remove('modal-enter-active'); setTimeout(() => { document.getElementById('addPropModal').classList.add('hidden'); }, 300); }
+            
+            // Edit Modal Controller - Extracts data attributes safely
+            function openEditPropModal(button) {
+                document.getElementById('editPropId').value = button.getAttribute('data-id');
+                document.getElementById('editPropName').value = button.getAttribute('data-name');
+                document.getElementById('editPropType').value = button.getAttribute('data-type');
+                document.getElementById('editPropRate').value = button.getAttribute('data-rate');
+                document.getElementById('editPropCity').value = button.getAttribute('data-city');
+                document.getElementById('editPropPostcode').value = button.getAttribute('data-postcode');
+                document.getElementById('editPropAddress').value = button.getAttribute('data-address');
+                document.getElementById('editPropDesc').value = button.getAttribute('data-desc');
+                document.getElementById('editPropStatus').value = button.getAttribute('data-status');
+
+                document.getElementById('editPropModal').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('editPropContent').classList.add('modal-enter-active'); }, 10);
+            }
+            function closeEditPropModal() {
+                document.getElementById('editPropContent').classList.remove('modal-enter-active');
+                setTimeout(() => { document.getElementById('editPropModal').classList.add('hidden'); }, 300);
+            }
         </script>
     </c:if>
 
@@ -298,8 +354,8 @@
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div> My Profile Settings
             </a>
             <c:if test="${sessionScope.userRole == 'owner'}">
-                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
-                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div> My Property Info
+                <a href="rentalController?action=duePayments" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div> Due Payments
                 </a>
             </c:if>
             <a href="reportController?action=viewTickets" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">

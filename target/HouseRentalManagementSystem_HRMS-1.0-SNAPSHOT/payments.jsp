@@ -84,7 +84,19 @@
             <h2 class="text-3xl font-extrabold text-slate-900">Payment Gateway</h2>
             <p class="text-slate-500 mt-1">Sandbox Environment for System Prototypes.</p>
         </div>
-
+        <c:forEach items="${activeRentals}" var="rental">
+            <c:if test="${rental.paymentStatus == 'Overdue'}">
+                <div class="bg-red-500 text-white rounded-2xl p-6 mb-8 flex items-center gap-6 shadow-lg shadow-red-500/30 border border-red-600 animate-pulse">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black tracking-tight">URGENT: PAYMENT OVERDUE</h3>
+                        <p class="text-red-100 font-medium text-sm mt-1">Your House Owner has issued an official notice regarding an unpaid balance for <b>${rental.propertyName}</b>. Please settle this amount immediately to avoid eviction.</p>
+                    </div>
+                </div>
+            </c:if>
+        </c:forEach>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
@@ -238,6 +250,11 @@
             <c:if test="${sessionScope.userRole == 'owner'}">
                 <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                     <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div> My Property Info
+                </a>
+            </c:if>
+            <c:if test="${sessionScope.userRole == 'owner'}">
+                <a href="rentalController?action=duePayments" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div> Due Payments
                 </a>
             </c:if>
             <a href="reportController?action=viewTickets" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">

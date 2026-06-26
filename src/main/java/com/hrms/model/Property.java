@@ -2,15 +2,16 @@ package com.hrms.model;
 
 public class Property {
     private int propertyId;
-    private int hoId; // House Owner ID
+    private int hoId; 
     private String propertyName;
-    private String propertyType; // NEW
-    private String description;  // NEW
+    private String propertyType; 
+    private String description;  
     private String address;
     private String city;
     private String postcode;
     private double rentalRate;
     private String availabilityStatus;
+    private String propertyImage; // NEW: Holds the Base64 Image
 
     // --- GETTERS & SETTERS ---
 
@@ -43,4 +44,7 @@ public class Property {
 
     public String getAvailabilityStatus() { return availabilityStatus; }
     public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
+
+    public String getPropertyImage() { return propertyImage; }
+    public void setPropertyImage(String propertyImage) { this.propertyImage = propertyImage; }
 }

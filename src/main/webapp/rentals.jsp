@@ -31,7 +31,7 @@
                 <a href="rentalController" class="text-orange-500 border-b-2 border-orange-500 pb-1">Rentals</a>
                 <c:choose>
                     <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
                 </c:choose>
             </div>
             <div class="flex items-center gap-2">
@@ -53,6 +53,7 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        
         <c:if test="${param.success == 'term_req'}">
             <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6 flex items-center gap-4 shadow-sm">
                 <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -84,6 +85,7 @@
                         <div class="flex justify-between text-sm"><span class="text-slate-500">Start Date:</span><span class="font-bold text-slate-800">${rental.startDate}</span></div>
                         <div class="flex justify-between text-sm"><span class="text-slate-500">Monthly Rent:</span><span class="font-black text-orange-600">RM ${rental.rentalRate}</span></div>
                     </div>
+                    
                     <c:if test="${sessionScope.userRole == 'owner' && rental.status == 'Termination_Requested'}">
                         <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6">
                             <p class="text-xs font-bold text-red-500 uppercase mb-1">Reason for Termination</p>
@@ -96,7 +98,8 @@
                             </form>
                         </div>
                     </c:if>
-                    <div class="border-t border-slate-100 pt-6">
+                    
+                    <div class="border-t border-slate-100 pt-6 space-y-3">
                         <button type="button" onclick="openAgreementModal('${rental.rentalId}', '${rental.propertyName}', '${rental.studentName}', '${rental.startDate}', '${empty rental.endDate ? 'Ongoing' : rental.endDate}', '${rental.rentalRate}', '${rental.status}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">View Agreement Details</button>
                     </div>
                 </div>
@@ -196,6 +199,9 @@
                 <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                     <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div> My Property Info
                 </a>
+                <a href="rentalController?action=duePayments" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div> Due Payments
+                </a>
             </c:if>
             <a href="reportController?action=viewTickets" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg></div> My Support Tickets
@@ -213,6 +219,7 @@
         const agModal = document.getElementById('agreementModal');
         const agContent = document.getElementById('agreementContent');
         const tBtnContainer = document.getElementById('terminateBtnContainer');
+        
         function openAgreementModal(rentalId, propName, tenantName, startDate, endDate, rent, status) {
             document.getElementById('modalPropName').innerText = propName;
             document.getElementById('modalTenantName').innerText = tenantName;

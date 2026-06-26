@@ -13,8 +13,8 @@ public class PropertyDAO {
     public boolean addProperty(Property p) {
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO property (ho_id, property_name, property_type, description, address, city, postcode, rental_rate, availability_status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Available')"
+                "INSERT INTO property (ho_id, property_name, property_type, description, address, city, postcode, rental_rate, availability_status, property_image) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Available', ?)"
             );
             ps.setInt(1, p.getHoId());
             ps.setString(2, p.getPropertyName());
@@ -24,6 +24,7 @@ public class PropertyDAO {
             ps.setString(6, p.getCity());
             ps.setString(7, p.getPostcode());
             ps.setDouble(8, p.getRentalRate());
+            ps.setString(9, p.getPropertyImage()); // NEW: Save image to DB
             
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -34,7 +35,8 @@ public class PropertyDAO {
     
     public boolean updateProperty(Property property) {
         boolean rowUpdated = false;
-        String sql = "UPDATE Property SET property_name = ?, property_type = ?, address = ?, description = ?, rental_rate = ?, availability_status = ?, city = ?, postcode = ? WHERE property_id = ?";
+        // COALESCE ensures that if no new image is provided, it keeps the old one
+        String sql = "UPDATE property SET property_name = ?, property_type = ?, address = ?, description = ?, rental_rate = ?, availability_status = ?, city = ?, postcode = ?, property_image = COALESCE(?, property_image) WHERE property_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -47,7 +49,8 @@ public class PropertyDAO {
             ps.setString(6, property.getAvailabilityStatus());
             ps.setString(7, property.getCity());
             ps.setString(8, property.getPostcode());
-            ps.setInt(9, property.getPropertyId());
+            ps.setString(9, property.getPropertyImage()); 
+            ps.setInt(10, property.getPropertyId());
 
             rowUpdated = ps.executeUpdate() > 0;
             
@@ -66,18 +69,14 @@ public class PropertyDAO {
                 Property p = new Property();
                 p.setPropertyId(rs.getInt("property_id"));
                 p.setPropertyName(rs.getString("property_name"));
-
                 p.setPropertyType(rs.getString("property_type")); 
-                p.setDescription(rs.getString("description"));   
-
-                p.setPropertyType(rs.getString("property_type")); // Fetched
                 p.setAddress(rs.getString("address"));
-                p.setDescription(rs.getString("description"));   // Fetched
-
+                p.setDescription(rs.getString("description"));   
                 p.setCity(rs.getString("city"));
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
                 p.setAvailabilityStatus(rs.getString("availability_status"));
+                p.setPropertyImage(rs.getString("property_image")); // NEW
                 list.add(p);
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -101,13 +100,13 @@ public class PropertyDAO {
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
                 p.setAvailabilityStatus(rs.getString("availability_status"));
+                p.setPropertyImage(rs.getString("property_image")); // NEW
                 list.add(p);
             }
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
 
-    // QOL ITEM 4: Added houseType to parameters
     public List<Property> searchProperties(String location, Double maxPrice, String houseType) {
         List<Property> list = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT * FROM property WHERE 1=1");
@@ -118,7 +117,6 @@ public class PropertyDAO {
         if (maxPrice != null && maxPrice > 0) {
             query.append(" AND rental_rate <= ?");
         }
-        // QOL ITEM 4: Filter by Property Type in the SQL query
         if (houseType != null && !houseType.trim().isEmpty() && !"Any".equalsIgnoreCase(houseType)) {
             query.append(" AND property_type = ?");
         }
@@ -149,6 +147,7 @@ public class PropertyDAO {
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
                 p.setAvailabilityStatus(rs.getString("availability_status"));
+                p.setPropertyImage(rs.getString("property_image")); // NEW
                 list.add(p);
             }
         } catch (Exception e) { e.printStackTrace(); }

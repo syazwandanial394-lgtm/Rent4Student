@@ -7,15 +7,21 @@ import com.hrms.model.HouseOwner;
 import com.hrms.model.Property;
 import com.hrms.model.Student;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 
 @WebServlet("/properties")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
 public class PropertyController extends HttpServlet {
     private PropertyDAO propertyDAO = new PropertyDAO();
     private RentalDAO rentalDAO = new RentalDAO();
@@ -46,37 +52,30 @@ public class PropertyController extends HttpServlet {
             hasActiveRental = rentalDAO.hasActiveRental(student.getStudentId());
             pendingProps = applicationDAO.getPendingProperties(student.getStudentId());
 
-            // Get parameters
             String searchLocation = request.getParameter("searchLocation");
             String maxPriceStr = request.getParameter("maxPrice");
             String houseType = request.getParameter("houseType"); 
             
             Double maxPrice = (maxPriceStr != null && !maxPriceStr.trim().isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
             
-            // Clean up empty string
             if (searchLocation != null && searchLocation.trim().isEmpty()) {
                 searchLocation = null;
             }
 
             String prefLoc = student.getPreferredLocation();
-
             boolean hasFilters = (searchLocation != null) || maxPrice != null || (houseType != null && !houseType.trim().isEmpty() && !"Any".equalsIgnoreCase(houseType));
 
-            // THE COMBO FIX:
             if (hasFilters) {
                 isSearch = true;
-                
                 String effectiveLocation = searchLocation;
                 
-                // If they used a filter (like Studio) but left the location blank, inject their preferred location!
                 if (effectiveLocation == null && prefLoc != null && !prefLoc.trim().isEmpty()) {
                     effectiveLocation = prefLoc;
-                    showingRecommendations = true; // Keeps the "Recommended in..." text on screen
+                    showingRecommendations = true; 
                 }
                 
                 propertyList = propertyDAO.searchProperties(effectiveLocation, maxPrice, houseType);
             } 
-            // DEFAULT VIEW
             else {
                 if (prefLoc != null && !prefLoc.trim().isEmpty()) {
                     propertyList = propertyDAO.searchProperties(prefLoc, null, null);
@@ -101,6 +100,34 @@ public class PropertyController extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
 
+        // --- BASE64 IMAGE UPLOAD LOGIC ---
+        String base64Image = null; 
+        try {
+            Part filePart = request.getPart("propertyImage");
+            if (filePart != null && filePart.getSize() > 0) {
+                InputStream inputStream = filePart.getInputStream();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                
+                byte[] imageBytes = outputStream.toByteArray();
+                String base64Data = Base64.getEncoder().encodeToString(imageBytes);
+                String contentType = filePart.getContentType(); 
+                
+                base64Image = "data:" + contentType + ";base64," + base64Data;
+                
+                inputStream.close();
+                outputStream.close();
+            }
+        } catch (Exception e) {
+            System.out.println("====== BASE64 IMAGE ENCODING ERROR (PROPERTY) ======");
+            e.printStackTrace();
+        }
+
         if ("addProperty".equals(action)) {
             HouseOwner owner = (HouseOwner) session.getAttribute("loggedUser");
             
@@ -113,6 +140,7 @@ public class PropertyController extends HttpServlet {
             p.setCity(request.getParameter("city"));
             p.setPostcode(request.getParameter("postcode"));
             p.setRentalRate(Double.parseDouble(request.getParameter("rentalRate")));
+            p.setPropertyImage(base64Image); // Attach the image to the model
 
             if (propertyDAO.addProperty(p)) {
                 response.sendRedirect("properties?success=added");
@@ -123,7 +151,6 @@ public class PropertyController extends HttpServlet {
 
         if ("updateProperty".equals(action)) {
             try {
-                // 1. Fetch form data and populate the Property model
                 Property property = new Property();
                 property.setPropertyId(Integer.parseInt(request.getParameter("propertyId")));
                 property.setPropertyName(request.getParameter("propertyName"));
@@ -134,11 +161,10 @@ public class PropertyController extends HttpServlet {
                 property.setAvailabilityStatus(request.getParameter("availabilityStatus"));
                 property.setCity(request.getParameter("city"));
                 property.setPostcode(request.getParameter("postcode"));
+                property.setPropertyImage(base64Image); // Will be null if no new image was selected
 
-                // 2. Call the DAO
                 boolean success = propertyDAO.updateProperty(property);
 
-                // 3. Redirect back to the properties page
                 if (success) {
                     response.sendRedirect("properties?success=updated");
                 } else {

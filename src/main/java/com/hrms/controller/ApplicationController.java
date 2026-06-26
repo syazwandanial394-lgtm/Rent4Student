@@ -30,10 +30,10 @@ public class ApplicationController extends HttpServlet {
 
         if ("student".equals(role)) {
             Student student = (Student) session.getAttribute("loggedUser");
-            appList = applicationDAO.getStudentApplications(student.getStudentId());
+            appList = applicationDAO.getApplicationsByStudent(student.getStudentId());
         } else if ("owner".equals(role)) {
             HouseOwner owner = (HouseOwner) session.getAttribute("loggedUser");
-            appList = applicationDAO.getOwnerApplications(owner.getHoId());
+            appList = applicationDAO.getApplicationsByOwner(owner.getHoId());
         }
 
         request.setAttribute("applicationList", appList);
@@ -49,34 +49,24 @@ public class ApplicationController extends HttpServlet {
             Student student = (Student) session.getAttribute("loggedUser");
             int propertyId = Integer.parseInt(request.getParameter("propertyId"));
             
-            // SECURITY CHECK: Do they have an active rental?
             boolean hasRental = rentalDAO.hasActiveRental(student.getStudentId());
-            // SECURITY CHECK: Do they already have a pending application for THIS house?
             boolean hasPending = applicationDAO.getPendingProperties(student.getStudentId()).contains(propertyId);
             
-            // Only create application if BOTH checks pass
             if (!hasRental && !hasPending) {
-                applicationDAO.createApplication(student.getStudentId(), propertyId);
+                applicationDAO.applyForProperty(student.getStudentId(), propertyId);
             }
             response.sendRedirect("applicationController");
         } 
         else if ("updateStatus".equals(action)) {
             int appId = Integer.parseInt(request.getParameter("applicationId"));
             String newStatus = request.getParameter("status"); 
-            
-            // QOL ITEM 7: Grab the remarks from the modal form
             String remarks = request.getParameter("remarks"); 
             
-            String result = "";
-            if ("Approved".equals(newStatus)) {
-                // Pass remarks into the approval method
-                result = applicationDAO.approveAndCreateRental(appId, remarks);
-            } else {
-                // Pass remarks into the reject/cancel method
-                result = applicationDAO.updateApplicationStatus(appId, newStatus, remarks);
-            }
+            // THE ULTIMATE DEBUGGER: This now returns the exact error string
+            String result = applicationDAO.updateApplicationStatus(appId, newStatus, remarks);
             
             if (!"success".equals(result)) {
+                // Safely encode the error message and attach it to the URL
                 response.sendRedirect("applicationController?error=" + java.net.URLEncoder.encode(result, "UTF-8"));
             } else {
                 response.sendRedirect("applicationController");
