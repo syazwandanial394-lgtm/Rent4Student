@@ -39,6 +39,9 @@
 =======
                     <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="nav-link hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
                     <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipt" class="nav-link hover:text-orange-500 transition-colors pb-1">Receipts</a></c:when>
+<<<<<<< HEAD
+>>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
+=======
 >>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
                 </c:choose>
             </div>

@@ -96,7 +96,11 @@
                                     <input type="hidden" name="rentalId" value="${rental.rentalId}">
                                     <input type="hidden" name="amount" value="${rental.rentalRate}">
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     
+=======
+                                    <input type="hidden" name="houseOwnerId" value="${rental.hoId}">
+>>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
 =======
                                     <input type="hidden" name="houseOwnerId" value="${rental.hoId}">
 >>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f

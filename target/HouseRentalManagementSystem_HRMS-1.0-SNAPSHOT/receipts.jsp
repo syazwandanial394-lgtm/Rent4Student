@@ -14,6 +14,7 @@
 <body class="bg-gray-50 min-h-screen overflow-y-scroll">
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     <nav class="bg-blue-600 p-4 text-white flex justify-between items-center shadow-md">
         <div class="flex gap-6 items-center">
             <h1 class="font-bold text-xl">RentEase</h1>
@@ -26,6 +27,8 @@
             </c:if>
             <a href="receipt" class="text-white font-bold border-b-2 border-white">Receipts</a>
 =======
+=======
+>>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm relative z-[60]">
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -52,6 +55,9 @@
                     </c:choose>
                 </button>
             </div>
+<<<<<<< HEAD
+>>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
+=======
 >>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
         </div>
     </nav>
@@ -68,6 +74,9 @@
 =======
             <h2 class="text-3xl font-extrabold text-gray-800">Official Receipts</h2>
             <button onclick="window.print()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
+<<<<<<< HEAD
+>>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
+=======
 >>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                 Print Ledger

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\model\Payment.java
 C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\controller\DashboardController.java
 C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\dao\HouseOwnerDAO.java
@@ -23,3 +24,30 @@ C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\
 C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\dao\PropertyDAO.java
 C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\controller\PropertyController.java
 C:\Project\HouseRentalManagementSystem_HRMS\Rent4Student\src\main\java\com\hrms\controller\SubscriptionController.java
+=======
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\Application.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\ApplicationDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\AuthController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\config\DBUtil.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\HouseOwner.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\PropertyController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\ProfileController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\Rental.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\PropertyDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\HouseOwnerDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\Student.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\AuthDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\SubscriptionController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\Receipt.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\Property.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\ApplicationController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\model\Payment.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\PaymentController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\ReceiptController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\RentalDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\RentalController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\PaymentDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\ReceiptDAO.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\controller\DashboardController.java
+C:\Users\Mini\Documents\GitHub\Rent4Student\src\main\java\com\hrms\dao\StudentDAO.java
+>>>>>>> de851cef4aedcaa524a4224b59e664b07a27926f
