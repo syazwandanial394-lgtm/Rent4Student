@@ -26,11 +26,107 @@
         .modal-enter-active { opacity: 1; transform: scale(1); }
     </style>
 </head>
-<body class="bg-slate-900 font-sans text-slate-200 min-h-screen flex items-center justify-center relative overflow-hidden">
+<body class="bg-slate-900 font-sans text-slate-200 min-h-screen flex flex-wrap items-center justify-center relative overflow-hidden gap-14 m-8">
     
     <div class="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>
     <div class="absolute bottom-20 right-20 w-72 h-72 bg-blue-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
+    <div class="grid grid-cols-3 gap-10">
+    <!--STANDARD-->
+    <div class="relative z-10 w-full max-w-lg p-8 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl">
+        
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full border border-white mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-7 w-7 text-white"
+                     viewBox="0 0 24 24"
+                     fill="currentColor">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-black text-white tracking-tight">Standard</h2>
+            <p class="text-slate-400 mt-2 text-sm">Upgrade to limit of 5 properties</p>
+        </div>
+        
+        <div class="bg-slate-800/50 border border-slate-600 rounded-2xl p-6 mb-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-1 bg-slate-600"></div>
+            
+            <h3 class="text-xl font-bold text-white mb-2">Standard Owner Plan</h3>
+            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 29<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+            
+            <ul class="text-left text-sm text-slate-300 space-y-3 mb-2 flex flex-col items-center">
+                <li class="flex items-center gap-3 w-48">
+                    <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Upgrade to 5 Properties
+                </li>
+                <li class="flex items-center gap-3 w-48">
+                    <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"></path></svg>
+                    Priority Support
+                </li>
+                <li class="flex items-center gap-3 w-48">
+                    <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"></path></svg>
+                    Featured Listings
+                </li>
+            </ul>
+        </div>
 
+        <form id="subscriptionForm" action="subscriptionController" method="POST" class="flex flex-col gap-4">
+            <input type="hidden" name="action" value="standard">
+            <input type="hidden" name="hoId" value="${sessionScope.loggedUser.hoId}">
+            
+            <button type="button" onclick="startUpgradeSimulation()" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-orange-500/30 transform hover:-translate-y-0.5 transition-all duration-200 outline-none">
+                Upgrade Now
+            </button>
+        </form>
+
+    </div>
+            
+    <!--PRO-->
+    <div class="relative z-10 w-full max-w-lg p-8 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl">
+        
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 mb-4 border border-gray-500/50 shadow-[0_0_15px_rgba(192,192,192,0.35)]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-black text-white tracking-tight">Pro</h2>
+            <p class="text-slate-400 mt-2 text-sm">Up to 7 properties!</p>
+        </div>
+        
+        <div class="bg-slate-800/50 border border-slate-600 rounded-2xl p-6 mb-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-br from-gray-100 to-gray-500"></div>
+            
+            <h3 class="text-xl font-bold text-white mb-2">Pro Owner Plan</h3>
+            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 49<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+            
+            <ul class="text-left text-sm text-slate-300 space-y-3 mb-2 flex flex-col items-center">
+                <li class="flex items-center gap-3 w-48">
+                    <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Up to 7 Properties!
+                </li>
+                <li class="flex items-center gap-3 w-48">
+                    <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Priority Support
+                </li>
+                <li class="flex items-center gap-3 w-48">
+                    <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"></path></svg>
+                    Featured Listings
+                </li>
+            </ul>
+        </div>
+
+        <form id="subscriptionForm" action="subscriptionController" method="POST" class="flex flex-col gap-4">
+            <input type="hidden" name="action" value="pro">
+            <input type="hidden" name="hoId" value="${sessionScope.loggedUser.hoId}">
+            
+            <button type="button" onclick="startUpgradeSimulation()" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-orange-500/30 transform hover:-translate-y-0.5 transition-all duration-200 outline-none">
+                Upgrade Now
+            </button>
+        </form>
+
+    </div>
+    
+    <!--PREMIUM-->
     <div class="relative z-10 w-full max-w-lg p-8 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl">
         
         <div class="text-center mb-8">
@@ -39,15 +135,15 @@
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
                 </svg>
             </div>
-            <h2 class="text-3xl font-black text-white tracking-tight">Limit Reached</h2>
-            <p class="text-slate-400 mt-2 text-sm">You have reached your limit of 5 free properties.</p>
+            <h2 class="text-3xl font-black text-white tracking-tight">Premium</h2>
+            <p class="text-slate-400 mt-2 text-sm">No limit!</p>
         </div>
         
         <div class="bg-slate-800/50 border border-slate-600 rounded-2xl p-6 mb-8 text-center relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600"></div>
             
             <h3 class="text-xl font-bold text-white mb-2">Premium Owner Plan</h3>
-            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 49<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 79<span class="text-lg text-slate-400 font-normal">/mo</span></div>
             
             <ul class="text-left text-sm text-slate-300 space-y-3 mb-2 flex flex-col items-center">
                 <li class="flex items-center gap-3 w-48">
@@ -66,20 +162,20 @@
         </div>
 
         <form id="subscriptionForm" action="subscriptionController" method="POST" class="flex flex-col gap-4">
-            <input type="hidden" name="action" value="subscribe">
+            <input type="hidden" name="action" value="premium">
             <input type="hidden" name="hoId" value="${sessionScope.loggedUser.hoId}">
             
             <button type="button" onclick="startUpgradeSimulation()" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-orange-500/30 transform hover:-translate-y-0.5 transition-all duration-200 outline-none">
                 Upgrade Now
             </button>
-            
-            <a href="properties" class="text-center w-full bg-slate-800/50 hover:bg-slate-700/50 border border-slate-600 text-slate-300 font-bold py-3 px-4 rounded-xl transition-all duration-200">
-                Cancel
-            </a>
         </form>
 
     </div>
-
+    <a href="properties" class="col-start-2 text-center w-full bg-slate-800/50 hover:bg-slate-700/50 border border-slate-600 text-slate-300 font-bold py-3 px-4 rounded-xl transition-all duration-200">
+        Cancel
+    </a>
+    </div>
+    <!--SIMULATE PAYMENT-->        
     <div id="processingModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"></div>
         <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-10 w-full max-w-sm text-center text-slate-800 modal-enter" id="processingContent">

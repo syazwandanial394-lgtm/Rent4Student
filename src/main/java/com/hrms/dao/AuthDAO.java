@@ -87,9 +87,24 @@ public class AuthDAO {
                 ho.setPassword(rs.getString("password"));
                 ho.setPhoneNumber(rs.getString("phone_number"));
                 ho.setProfileImage(rs.getString("profile_image"));
+                ho.setSubscriptionStatus(rs.getString("subscription_status"));
                 return ho;
             }
         } catch (Exception e) { e.printStackTrace(); }
         return null;
+    }
+    
+    public boolean updateSubscriptionStatus(int hoId, String status) {
+        String sql = "UPDATE House_Owner SET subscription_status = ? WHERE ho_id = ?";
+        try (Connection conn = DBUtil.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, status);
+            ps.setInt(2, hoId);
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+            return false;
+        }
     }
 }
