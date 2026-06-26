@@ -3,7 +3,6 @@
 <c:if test="${empty sessionScope.userRole}">
     <c:redirect url="login.jsp"/>
 </c:if>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,20 +11,33 @@
     <style>
         @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
         .animate-blob { animation: blob 7s infinite; }
-        .animation-delay-2000 { animation-delay: 2s; }
+        
+        /* THE FIX: PRINT SPECIFIC CSS */
         @media print {
-            body { background: white; }
-            nav, #profileDrawer, #profileBackdrop, .no-print, .animate-blob { display: none !important; }
-            main { margin: 0; padding: 0; max-width: 100%; }
-            .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0; }
+            /* Force the printer into landscape mode so wide tables fit */
+            @page { size: landscape; margin: 1cm; }
+            
+            /* Remove scroll boxes so the table naturally expands */
+            body, main, .overflow-x-auto { overflow: visible !important; display: block !important; }
+            
+            /* Hide UI elements that shouldn't be printed */
+            nav, .animate-blob, #profileDrawer, #profileBackdrop, .print-hide { display: none !important; }
+            
+            /* Clean up table formatting for paper */
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 12pt !important; }
+            th, td { padding: 12px 8px !important; white-space: normal !important; border-bottom: 1px solid #e2e8f0 !important; }
+            .bg-slate-50 { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+            
+            /* Remove main container padding so it uses the whole page */
+            main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
         }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
-    
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
-    <div class="absolute top-40 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
 
+    <!-- Navigation -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm relative z-[60]">
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -37,21 +49,15 @@
                 <a href="properties" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Properties</a>
                 <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
                 <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
-                <c:choose>
-                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="paymentController"class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
-                </c:choose>
+                <a href="paymentController" class="text-orange-500 border-b-2 border-orange-500 pb-1">Revenue</a>
             </div>
             <div class="flex items-center gap-2">
                 <div class="hidden md:block text-right mr-2">
                     <p class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Welcome,</p>
-                    <p class="text-sm font-black text-slate-800 leading-none">
-                        <c:choose><c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when><c:otherwise>${sessionScope.loggedUser.username}</c:otherwise></c:choose>
-                    </p>
+                    <p class="text-sm font-black text-slate-800 leading-none">${sessionScope.loggedUser.username}</p>
                 </div>
-                <button onclick="toggleProfileDrawer()" class="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-500 text-white font-black flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 transition-all outline-none focus:ring-4 focus:ring-orange-200 shrink-0 overflow-hidden border-2 border-white">
+                <button onclick="toggleProfileDrawer()" class="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-500 text-white font-black flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 transition-all outline-none focus:ring-4 focus:ring-orange-200 shrink-0 border-2 border-white overflow-hidden">
                     <c:choose>
-                        <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
                         <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
                     </c:choose>
@@ -60,72 +66,75 @@
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        
-        <div class="flex justify-between items-end mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-slate-900">Revenue Ledger</h2>
                 <p class="text-slate-500 mt-1">Track your incoming rent payments and official receipts.</p>
             </div>
-            <button onclick="window.print()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2 no-print">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                Print Ledger
+            <!-- Added a dedicated Print Button (hides itself when printing) -->
+            <button onclick="window.print()" class="print-hide bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Print to PDF
             </button>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-max">
-                <thead>
-                    <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
-                        <th class="p-6 font-bold">Receipt ID</th>
-                        <th class="p-6 font-bold">Issue Date</th>
-                        <th class="p-6 font-bold">Payment Ref #</th>
-                        <th class="p-6 font-bold">Method</th>
-                        <th class="p-6 font-bold text-right">Amount Received</th>
-                        <th class="p-6 font-bold text-center">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    <c:forEach var="receipt" items="${receiptList}">
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-6 font-black text-slate-800 text-sm">RCPT-${receipt.receiptId}</td>
-                            <td class="p-6 text-slate-500 text-sm">${receipt.issueDate}</td>
-                            <td class="p-6 text-slate-600 text-sm">PAY-${receipt.paymentId}</td>
-                            <td class="p-6 text-slate-600 text-sm">${receipt.paymentMethod}</td>
-                            <td class="p-6 text-right font-black text-green-600">RM ${receipt.amountPaid}</td>
-                            <td class="p-6 text-center">
-                                <span class="bg-green-100 text-green-700 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wide">
-                                    ${receipt.receiptStatus}
-                                </span>
-                            </td>
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <!-- The scrollable box for mobile devices -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-100 text-xs font-black text-slate-500 uppercase tracking-wider">
+                            <th class="p-6">Receipt ID</th>
+                            <th class="p-6">Issue Date</th>
+                            <th class="p-6">Payment Ref #</th>
+                            <th class="p-6">Method</th>
+                            <th class="p-6">Amount Received</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty receiptList}">
-                        <tr><td colspan="6" class="p-8 text-center text-slate-500 font-bold">No revenue receipts have been generated yet.</td></tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <c:forEach items="${receiptList}" var="rec">
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="p-6 font-bold text-slate-900 whitespace-nowrap">RCPT-${rec.receiptId}</td>
+                                <td class="p-6 text-slate-600">${rec.issueDate}</td>
+                                <td class="p-6 text-slate-500">PAY-${rec.paymentId}</td>
+                                <td class="p-6 text-slate-600">${rec.paymentMethod}</td>
+                                <td class="p-6 font-black text-green-600 whitespace-nowrap">RM ${rec.amountPaid}</td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty receiptList}">
+                            <tr>
+                                <td colspan="5" class="p-12 text-center text-slate-500 font-bold">
+                                    <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    No revenue history found.
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
-    <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300 no-print"></div>
-    <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100 no-print">
+    <!-- PROFILE DRAWER -->
+    <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300 print-hide"></div>
+    <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100 print-hide">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner overflow-hidden border-2 border-white">
                     <c:choose>
-                        <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
                         <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
                     </c:choose>
                 </div>
                 <div>
-                    <p class="font-bold text-slate-900 leading-tight"><c:choose><c:when test="${sessionScope.userRole == 'admin'}">${sessionScope.adminName}</c:when><c:otherwise>${sessionScope.loggedUser.fullName}</c:otherwise></c:choose></p>
+                    <p class="font-bold text-slate-900 leading-tight">${sessionScope.loggedUser.fullName}</p>
                     <p class="text-xs font-bold text-orange-500 uppercase tracking-widest mt-1">${sessionScope.userRole}</p>
                 </div>
             </div>
             <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
+        
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
             <c:choose >
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
@@ -163,20 +172,26 @@
                     </a>
                 </c:when>
             </c:choose>
+            
             <a href="profileController" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div> My Profile Settings
             </a>
-            <c:if test="${sessionScope.userRole == 'owner'}">
-                <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
-                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div> My Property Info
-                </a>
-            </c:if>
+            
+            <a href="properties" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div> My Properties
+            </a>
+            
+            <a href="rentalController?action=duePayments" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div> Due Payments
+            </a>
+            
             <a href="reportController?action=viewTickets" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg></div> My Support Tickets
             </a>
         </div>
+        
         <div class="p-6 border-t border-slate-100 bg-slate-50">
-            <form action="auth" method="POST" class="m-0">
+            <form id="logoutFormDrawer" action="auth" method="POST" class="m-0">
                 <input type="hidden" name="action" value="logout">
                 <button type="submit" class="w-full flex items-center justify-center gap-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold py-3 rounded-xl shadow-sm transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Secure Logout</button>
             </form>
