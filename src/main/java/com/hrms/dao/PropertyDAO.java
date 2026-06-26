@@ -153,4 +153,25 @@ public class PropertyDAO {
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
+    public int getTotalPropertiesByOwner(int hoId) {
+        int totalCount = 0;
+        String sql = "SELECT COUNT(*) FROM property WHERE ho_id = ?";
+        
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, hoId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                // Retrieves the count from the first column of the result
+                totalCount = rs.getInt(1); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return totalCount;
+    }
+    
 }
