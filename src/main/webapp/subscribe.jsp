@@ -44,19 +44,19 @@
                 </svg>
             </div>
             <h2 class="text-3xl font-black text-white tracking-tight">Standard</h2>
-            <p class="text-slate-400 mt-2 text-sm">Upgrade to limit of 5 properties</p>
+            <p class="text-slate-400 mt-2 text-sm">Upgrade to limit of 2 properties</p>
         </div>
         
         <div class="bg-slate-800/50 border border-slate-600 rounded-2xl p-6 mb-8 text-center relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-1 bg-slate-600"></div>
             
             <h3 class="text-xl font-bold text-white mb-2">Standard Owner Plan</h3>
-            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 29<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 59.99<span class="text-lg text-slate-400 font-normal">/mo</span></div>
             
             <ul class="text-left text-sm text-slate-300 space-y-3 mb-2 flex flex-col items-center">
                 <li class="flex items-center gap-3 w-48">
                     <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    Upgrade to 5 Properties
+                    Upgrade to 2 Properties
                 </li>
                 <li class="flex items-center gap-3 w-48">
                     <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"></path></svg>
@@ -90,19 +90,19 @@
                 </svg>
             </div>
             <h2 class="text-3xl font-black text-white tracking-tight">Pro</h2>
-            <p class="text-slate-400 mt-2 text-sm">Up to 7 properties!</p>
+            <p class="text-slate-400 mt-2 text-sm">Up to 3 properties!</p>
         </div>
         
         <div class="bg-slate-800/50 border border-slate-600 rounded-2xl p-6 mb-8 text-center relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-br from-gray-100 to-gray-500"></div>
             
             <h3 class="text-xl font-bold text-white mb-2">Pro Owner Plan</h3>
-            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 49<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 79.99<span class="text-lg text-slate-400 font-normal">/mo</span></div>
             
             <ul class="text-left text-sm text-slate-300 space-y-3 mb-2 flex flex-col items-center">
                 <li class="flex items-center gap-3 w-48">
                     <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    Up to 7 Properties!
+                    Up to 3 Properties!
                 </li>
                 <li class="flex items-center gap-3 w-48">
                     <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -143,7 +143,7 @@
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600"></div>
             
             <h3 class="text-xl font-bold text-white mb-2">Premium Owner Plan</h3>
-            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 79<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+            <div class="text-orange-400 font-black text-4xl mb-4 tracking-tight">RM 129.99<span class="text-lg text-slate-400 font-normal">/mo</span></div>
             
             <ul class="text-left text-sm text-slate-300 space-y-3 mb-2 flex flex-col items-center">
                 <li class="flex items-center gap-3 w-48">
