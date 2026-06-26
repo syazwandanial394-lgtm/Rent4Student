@@ -25,7 +25,7 @@ public class RentalDAO {
         List<Rental> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                "SELECT r.*, p.property_name, p.rental_rate, s.full_name " +
+                "SELECT r.*, p.property_name, p.rental_rate, p.ho_id, s.full_name " +
                 "FROM rental r " +
                 "JOIN property p ON r.property_id = p.property_id " +
                 "JOIN student s ON r.student_id = s.student_id " +
@@ -46,6 +46,7 @@ public class RentalDAO {
                 r.setEndDate(rs.getString("end_date")); 
                 
                 r.setRentalRate(rs.getDouble("rental_rate")); 
+                r.setHoId(rs.getInt("ho_id"));
                 
                 String dbStatus = rs.getString("status");
                 r.setStatus(dbStatus == null ? "Active" : dbStatus);

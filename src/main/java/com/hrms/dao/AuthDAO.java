@@ -38,6 +38,7 @@ public class AuthDAO {
                 owner.setHoId(rs.getInt("ho_id"));
                 owner.setFullName(rs.getString("full_name"));
                 owner.setEmail(rs.getString("email"));
+                owner.setSubscriptionStatus(rs.getString("subscription_status"));
             }
         } catch (Exception e) { e.printStackTrace(); }
         return owner;
@@ -78,4 +79,18 @@ public class AuthDAO {
             return false; 
         }
     }
+    
+    public boolean updateSubscriptionStatus(int hoId, String status) {
+    String sql = "UPDATE House_Owner SET subscription_status = ? WHERE ho_id = ?";
+    try (Connection conn = DBUtil.getConnection()) {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, status);
+        ps.setInt(2, hoId);
+        
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) { 
+        e.printStackTrace(); 
+        return false;
+    }
+}
 }

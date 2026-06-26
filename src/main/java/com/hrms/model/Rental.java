@@ -4,6 +4,7 @@ public class Rental {
     private int rentalId;
     private int propertyId;
     private int studentId;
+    private int hoId;
     private String propertyName;
     private String studentName;
     private String startDate;
@@ -22,6 +23,9 @@ public class Rental {
 
     public int getStudentId() { return studentId; }
     public void setStudentId(int studentId) { this.studentId = studentId; }
+    
+    public int getHoId() { return hoId; }
+    public void setHoId(int hoId) { this.hoId = hoId; }
 
     public String getPropertyName() { return propertyName; }
     public void setPropertyName(String propertyName) { this.propertyName = propertyName; }

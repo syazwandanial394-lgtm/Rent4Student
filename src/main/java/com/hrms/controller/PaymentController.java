@@ -44,7 +44,12 @@ public class PaymentController extends HttpServlet {
         
         if ("payRent".equals(action)) {
             int rentalId = Integer.parseInt(request.getParameter("rentalId"));
+
             double baseAmount = Double.parseDouble(request.getParameter("amount"));
+
+            double amount = Double.parseDouble(request.getParameter("amount"));
+            int houseOwnerId= Integer.parseInt(request.getParameter("houseOwnerId"));
+
             String method = request.getParameter("paymentMethod");
 
             // QOL ITEM 9: Add 3% Service Fee and round to 2 decimal places
@@ -53,7 +58,12 @@ public class PaymentController extends HttpServlet {
 
             Payment p = new Payment();
             p.setRentalId(rentalId);
+
             p.setAmount(totalAmountWithFee); // Save the total including fee
+
+            p.setAmount(amount);
+            p.setHouseOwnerId(houseOwnerId);
+
             p.setPaymentMethod(method);
             
             // Catch the response
