@@ -215,33 +215,84 @@
     </c:if>
 
     <c:if test="${sessionScope.userRole == 'owner'}">
+        
+
+        <c:set var="subStatus" value="${sessionScope.loggedUser.subscriptionStatus}" />
+        <c:set var="limitReached" value="false" />
+        <c:set var="maxLimit" value="0" />
+
+        <c:choose>
+            <c:when test="${subStatus == 'Free'}">
+                <c:if test="${totalHouses >= 2}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="2" />
+            </c:when>
+            <c:when test="${subStatus == 'Standard'}">
+                <c:if test="${totalHouses >= 5}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="5" />
+            </c:when>
+            <c:when test="${subStatus == 'Pro'}">
+                <c:if test="${totalHouses >= 7}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="7" />
+            </c:when>
+            <c:when test="${subStatus == 'Premium'}">
+                <c:set var="limitReached" value="false" />
+                <c:set var="maxLimit" value="Unlimited" />
+            </c:when>
+            <c:otherwise>
+                <c:if test="${totalHouses >= 2}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="2" />
+            </c:otherwise>
+        </c:choose>
+
         <div id="addPropModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAddPropModal()"></div>
             <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 w-full max-w-2xl modal-enter max-h-[90vh] overflow-y-auto" id="addPropContent">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
                     <h2 class="text-2xl font-black text-slate-900">List New Property</h2>
-                    <button onclick="closeAddPropModal()" class="text-slate-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                    <button onclick="closeAddPropModal()" class="text-slate-400 hover:text-red-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
+
+                <c:if test="${limitReached}">
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+                        <svg class="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <div>
+                            <h4 class="font-bold text-red-800">Property Limit Reached</h4>
+                            <p class="text-sm text-red-600 mt-1">Your <strong>${subStatus}</strong> subscription limits you to <strong>${maxLimit}</strong> properties. Please upgrade your plan to add more listings.</p>
+                        </div>
+                    </div>
+                </c:if>
+
                 <form action="properties" method="POST" enctype="multipart/form-data" class="space-y-4">
                     <input type="hidden" name="action" value="addProperty">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Name</label><input type="text" name="propertyName" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Name</label><input type="text" name="propertyName" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}></div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Type</label>
-                            <select name="propertyType" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                            <select name="propertyType" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}>
                                 <option value="Apartment">Apartment / Flat</option><option value="Terrace">Terrace House</option><option value="Semi-D">Semi-D</option><option value="Bungalow">Bungalow</option><option value="Studio">Studio / Room</option>
                             </select>
                         </div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Image (Optional)</label><input type="file" name="propertyImage" accept="image/*" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label><textarea name="description" rows="3" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Full Address</label><input type="text" name="address" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">City</label><input type="text" name="city" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Postcode</label><input type="text" name="postcode" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Monthly Rent (RM)</label><input type="number" step="0.01" name="rentalRate" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Property Image (Optional)</label><input type="file" name="propertyImage" accept="image/*" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer" ${limitReached ? 'disabled' : ''}></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label><textarea name="description" rows="3" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}></textarea></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Full Address</label><input type="text" name="address" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">City</label><input type="text" name="city" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Postcode</label><input type="text" name="postcode" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Monthly Rent (RM)</label><input type="number" step="0.01" name="rentalRate" required class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" ${limitReached ? 'disabled' : ''}></div>
                     </div>
+
                     <div class="pt-4 mt-2 border-t border-slate-100 flex justify-end gap-3">
                         <button type="button" onclick="closeAddPropModal()" class="px-6 py-3 font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
-                        <button type="submit" class="px-6 py-3 font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-md">Publish Listing</button>
+
+                        <c:choose>
+                            <c:when test="${limitReached}">
+                                <button type="button" disabled class="px-6 py-3 font-bold text-white bg-slate-400 rounded-xl cursor-not-allowed">Limit Reached</button>
+                            </c:when>
+                            <c:otherwise>
+                                <button type="submit" class="px-6 py-3 font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-md">Publish Listing</button>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </form>
             </div>
@@ -337,15 +388,38 @@
             <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
-            <c:choose>
+            <c:choose >
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform hover:scale-[1.02] transition-all duration-200 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> Premium Owner Unlocked
+                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                        </svg>
+                        Premium Owner Unlocked
+                    </div>
+                </c:when>
+                <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Pro'}">
+                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-600 text-slate-950 font-white rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-silver-500/20 border border-yellow-300/40 transform transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                        </svg>
+                        Pro Owner Unlocked
+                    </div>
+                </c:when>
+                <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Standard'}">
+                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-glate-800 to-gray-200 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-slate-500/20 border border-yellow-300/40 transform transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                        </svg>
+                        Standard Ownership
                     </div>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Free'}">
-                    <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+                    <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                        </div>
                         <span class="tracking-wide">Upgrade to Premium</span>
                     </a>
                 </c:when>

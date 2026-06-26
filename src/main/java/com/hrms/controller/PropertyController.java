@@ -31,7 +31,7 @@ public class PropertyController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("userRole");
-
+        
         if (role == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -47,6 +47,10 @@ public class PropertyController extends HttpServlet {
         if ("owner".equals(role)) {
             HouseOwner owner = (HouseOwner) session.getAttribute("loggedUser");
             propertyList = propertyDAO.getPropertiesByOwner(owner.getHoId());
+            
+            int totalHouses = propertyDAO.getTotalPropertiesByOwner(owner.getHoId());
+            request.setAttribute("totalHouses", totalHouses);
+            
         } else {
             Student student = (Student) session.getAttribute("loggedUser");
             hasActiveRental = rentalDAO.hasActiveRental(student.getStudentId());

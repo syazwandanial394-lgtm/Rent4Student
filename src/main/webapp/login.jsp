@@ -41,13 +41,25 @@
         <form action="auth" method="POST" class="flex flex-col gap-5">
             <input type="hidden" name="action" value="login">
             
-            <div>
-                <label class="block text-slate-300 text-xs font-bold mb-2 uppercase tracking-wide">I am a:</label>
-                <select name="role" required class="w-full bg-slate-800/50 border border-slate-600 text-white p-3 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all appearance-none">
-                    <option value="student">Student</option>
-                    <option value="owner">House Owner</option>
-                    <option value="admin">System Admin</option>
-                </select>
+            <div class="relative group" id="custom-role-select">
+                <label class="block text-slate-400 text-xs font-semibold mb-2 uppercase tracking-wider">I am a:</label>
+
+                <input type="hidden" name="role" id="role-input" required>
+
+                <button type="button" id="dropdown-button" class="w-full flex items-center justify-between bg-slate-800/80 border border-slate-700 text-slate-200 p-3.5 rounded-xl hover:bg-slate-800 hover:border-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all shadow-sm">
+                    <span id="dropdown-text" class="text-slate-400">Select your role...</span>
+                    <svg id="dropdown-arrow" class="w-4 h-4 text-slate-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div id="dropdown-menu" class="absolute z-50 w-full mt-2 bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden opacity-0 invisible -translate-y-2 transition-all duration-200 ease-out">
+                    <div class="py-1">
+                        <div class="dropdown-option px-4 py-3 text-slate-200 hover:bg-slate-800 hover:text-orange-400 cursor-pointer transition-colors" data-value="student">Student</div>
+                        <div class="dropdown-option px-4 py-3 text-slate-200 hover:bg-slate-800 hover:text-orange-400 cursor-pointer transition-colors" data-value="owner">House Owner</div>
+                        <div class="dropdown-option px-4 py-3 text-slate-200 hover:bg-slate-800 hover:text-orange-400 cursor-pointer transition-colors" data-value="admin">System Admin</div>
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -69,5 +81,49 @@
             Don't have an account? <a href="signup.jsp" class="text-orange-400 font-bold hover:text-orange-300 hover:underline transition">Sign Up</a>
         </p>
     </div>
+        
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('dropdown-button');
+            const menu = document.getElementById('dropdown-menu');
+            const arrow = document.getElementById('dropdown-arrow');
+            const text = document.getElementById('dropdown-text');
+            const hiddenInput = document.getElementById('role-input');
+            const options = document.querySelectorAll('.dropdown-option');
+
+            // 1. Toggle dropdown open/close with animation
+            button.addEventListener('click', () => {
+                menu.classList.toggle('opacity-0');
+                menu.classList.toggle('invisible');
+                menu.classList.toggle('-translate-y-2');
+                arrow.classList.toggle('rotate-180'); // Spins the arrow upside down!
+            });
+
+            // 2. Handle what happens when a user clicks an option
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Update the visible text
+                    text.textContent = option.textContent;
+                    text.classList.remove('text-slate-400');
+                    text.classList.add('text-slate-200');
+
+                    // Update the hidden input for form submission
+                    hiddenInput.value = option.getAttribute('data-value');
+
+                    // Close the menu
+                    menu.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                    arrow.classList.remove('rotate-180');
+                });
+            });
+
+            // 3. Close the menu automatically if the user clicks anywhere else on the page
+            document.addEventListener('click', (e) => {
+                if (!button.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                    arrow.classList.remove('rotate-180');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
