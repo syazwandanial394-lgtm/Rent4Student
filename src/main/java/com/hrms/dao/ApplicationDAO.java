@@ -13,18 +13,20 @@ public class ApplicationDAO {
     public boolean createApplication(int studentId, int propertyId) {
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO application (student_id, property_id, application_date, application_status) VALUES (?, ?, NOW(), 'Pending')"
+                "INSERT INTO application (student_id, property_id, application_date, status) VALUES (?, ?, NOW(), 'Pending')"
             );
             ps.setInt(1, studentId);
             ps.setInt(2, propertyId);
             return ps.executeUpdate() > 0;
-        } catch (Exception e) { e.printStackTrace(); return false; }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+            return false; 
+        }
     }
 
-    // QOL ITEM 7: Added remarks parameter to the method signature and SQL statement
     public String updateApplicationStatus(int applicationId, String newStatus, String remarks) {
         try (Connection conn = DBUtil.getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("UPDATE application SET application_status = ?, remarks = ? WHERE application_id = ?");
+            PreparedStatement ps = conn.prepareStatement("UPDATE application SET status = ?, remarks = ? WHERE application_id = ?");
             ps.setString(1, newStatus);
             ps.setString(2, remarks);
             ps.setInt(3, applicationId);
@@ -36,7 +38,6 @@ public class ApplicationDAO {
         }
     }
 
-    // QOL ITEM 7: Added remarks parameter to the method signature and SQL statement
     public String approveAndCreateRental(int applicationId, String remarks) {
         try (Connection conn = DBUtil.getConnection()) {
             conn.setAutoCommit(false); 
@@ -48,7 +49,7 @@ public class ApplicationDAO {
             int studentId = rs.getInt("student_id");
             int propertyId = rs.getInt("property_id");
 
-            PreparedStatement psApp = conn.prepareStatement("UPDATE application SET application_status = 'Approved', remarks = ? WHERE application_id = ?");
+            PreparedStatement psApp = conn.prepareStatement("UPDATE application SET status = 'Approved', remarks = ? WHERE application_id = ?");
             psApp.setString(1, remarks);
             psApp.setInt(2, applicationId);
             psApp.executeUpdate();
@@ -57,7 +58,10 @@ public class ApplicationDAO {
             psProp.setInt(1, propertyId);
             psProp.executeUpdate();
 
-            PreparedStatement psRental = conn.prepareStatement("INSERT INTO rental (student_id, property_id, start_date) VALUES (?, ?, CURDATE())");
+            // FIXED: Added the 6-Month End Date Calculation!
+            PreparedStatement psRental = conn.prepareStatement(
+                "INSERT INTO rental (student_id, property_id, start_date, end_date) VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 6 MONTH))"
+            );
             psRental.setInt(1, studentId);
             psRental.setInt(2, propertyId);
             psRental.executeUpdate();
@@ -81,10 +85,9 @@ public class ApplicationDAO {
                 app.setApplicationId(rs.getInt("application_id"));
                 app.setPropertyId(rs.getInt("property_id"));
                 app.setApplicationDate(rs.getString("application_date"));
-                app.setStatus(rs.getString("application_status"));
-                app.setPropertyName(rs.getString("property_name"));
                 
-                // QOL ITEM 7: Retrieve remarks from database
+                app.setStatus(rs.getString("status"));
+                app.setPropertyName(rs.getString("property_name"));
                 app.setRemarks(rs.getString("remarks")); 
                 
                 list.add(app);
@@ -107,11 +110,10 @@ public class ApplicationDAO {
                 app.setApplicationId(rs.getInt("application_id"));
                 app.setPropertyId(rs.getInt("property_id"));
                 app.setApplicationDate(rs.getString("application_date"));
-                app.setStatus(rs.getString("application_status"));
+                
+                app.setStatus(rs.getString("status"));
                 app.setPropertyName(rs.getString("property_name"));
                 app.setStudentName(rs.getString("full_name"));
-                
-                // QOL ITEM 7: Retrieve remarks from database
                 app.setRemarks(rs.getString("remarks"));
                 
                 list.add(app);
@@ -123,7 +125,7 @@ public class ApplicationDAO {
     public List<Integer> getPendingProperties(int studentId) {
         List<Integer> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("SELECT property_id FROM application WHERE student_id = ? AND application_status = 'Pending'");
+            PreparedStatement ps = conn.prepareStatement("SELECT property_id FROM application WHERE student_id = ? AND status = 'Pending'");
             ps.setInt(1, studentId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

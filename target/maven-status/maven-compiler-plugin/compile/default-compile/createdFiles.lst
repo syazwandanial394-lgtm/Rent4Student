@@ -18,8 +18,11 @@ com\hrms\controller\RentalController.class
 com\hrms\dao\RentalDAO.class
 com\hrms\dao\PropertyDAO.class
 com\hrms\controller\PropertyController.class
+com\hrms\model\AdminReport.class
 com\hrms\model\Payment.class
 com\hrms\config\DBUtil.class
+com\hrms\controller\ReportController.class
+com\hrms\dao\ReportDAO.class
 com\hrms\model\HouseOwner.class
 com\hrms\dao\HouseOwnerDAO.class
 com\hrms\dao\StudentDAO.class

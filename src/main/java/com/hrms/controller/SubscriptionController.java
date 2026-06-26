@@ -1,6 +1,6 @@
 package com.hrms.controller;
 
-import com.hrms.dao.AuthDAO;
+import com.hrms.dao.HouseOwnerDAO;
 import com.hrms.model.HouseOwner;
 
 import java.io.IOException;
@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/subscriptionController")
 public class SubscriptionController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private AuthDAO authDAO;
+    
+    // FIXED: Changed from AuthDAO to HouseOwnerDAO
+    private HouseOwnerDAO houseOwnerDAO;
 
     public void init() {
-        authDAO = new AuthDAO();
+        houseOwnerDAO = new HouseOwnerDAO();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
@@ -32,7 +34,7 @@ public class SubscriptionController extends HttpServlet {
                 int hoId = Integer.parseInt(hoIdParam);
                 
                 // 1. Trigger the DAO method to update the column in phpMyAdmin to 'Premium'
-                boolean isUpdated = authDAO.updateSubscriptionStatus(hoId, "Premium");
+                boolean isUpdated = houseOwnerDAO.updateSubscriptionStatus(hoId, "Premium");
                 
                 if (isUpdated) {
                     // 2. VERY IMPORTANT: Update the current session object 

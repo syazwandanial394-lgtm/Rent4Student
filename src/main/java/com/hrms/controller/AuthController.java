@@ -4,14 +4,20 @@ import com.hrms.dao.AuthDAO;
 import com.hrms.model.HouseOwner;
 import com.hrms.model.Student;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 @WebServlet("/auth")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
 public class AuthController extends HttpServlet {
     private AuthDAO authDAO = new AuthDAO(); 
 
@@ -23,17 +29,13 @@ public class AuthController extends HttpServlet {
         if ("login".equals(action)) {
             String role = request.getParameter("role");
             
-            // --- SYSTEM ADMIN BACKDOOR ---
             if ("admin".equals(role)) {
                 if ("admin@rentease.com".equals(request.getParameter("email")) && "admin123".equals(request.getParameter("password"))) {
                     session.setAttribute("userRole", "admin");
                     session.setAttribute("adminName", "System Administrator");
                     response.sendRedirect("admin-dashboard.jsp");
-                } else {
-                    response.sendRedirect("login.jsp?error=invalid");
-                }
+                } else { response.sendRedirect("login.jsp?error=invalid"); }
             } 
-            // --- EXISTING STUDENT LOGIN ---
             else if ("student".equals(role)) {
                 Student student = authDAO.loginStudent(request.getParameter("email"), request.getParameter("password"));
                 if (student != null) {
@@ -42,7 +44,6 @@ public class AuthController extends HttpServlet {
                     response.sendRedirect("dashboard");
                 } else { response.sendRedirect("login.jsp?error=invalid"); }
             } 
-            // --- EXISTING OWNER LOGIN ---
             else if ("owner".equals(role)) {
                 HouseOwner owner = authDAO.loginHouseOwner(request.getParameter("email"), request.getParameter("password"));
                 if (owner != null) {
@@ -58,30 +59,63 @@ public class AuthController extends HttpServlet {
         } 
         else if ("signup".equals(action)) {
             String role = request.getParameter("role");
+            String username = request.getParameter("username");
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
             String password = request.getParameter("password");
             String phoneNumber = request.getParameter("phoneNumber");
 
+            // --- BULLETPROOF BASE64 IMAGE UPLOAD ---
+            String base64Image = null; 
+            try {
+                Part filePart = request.getPart("profileImage");
+                if (filePart != null && filePart.getSize() > 0) {
+                    InputStream inputStream = filePart.getInputStream();
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    
+                    byte[] imageBytes = outputStream.toByteArray();
+                    String base64Data = Base64.getEncoder().encodeToString(imageBytes);
+                    String contentType = filePart.getContentType(); 
+                    
+                    base64Image = "data:" + contentType + ";base64," + base64Data;
+                    
+                    inputStream.close();
+                    outputStream.close();
+                }
+            } catch (Exception e) {
+                System.out.println("====== BASE64 IMAGE ENCODING ERROR (SIGNUP) ======");
+                e.printStackTrace();
+            }
+
             boolean success = false;
             
             if ("student".equals(role)) {
                 Student s = new Student();
+                s.setUsername(username);
                 s.setFullName(fullName);
                 s.setEmail(email);
                 s.setPassword(password);
                 s.setPhoneNumber(phoneNumber);
+                s.setProfileImage(base64Image); // Set Base64 string
                 s.setUniversity(request.getParameter("university"));
                 s.setFaculty(request.getParameter("faculty"));
-                s.setPreferredLocation(request.getParameter("preferredLocation")); // Added Preferred Location
+                s.setPreferredLocation(request.getParameter("preferredLocation")); 
                 success = authDAO.registerStudent(s);
             } 
             else if ("owner".equals(role)) {
                 HouseOwner ho = new HouseOwner();
+                ho.setUsername(username);
                 ho.setFullName(fullName);
                 ho.setEmail(email);
                 ho.setPassword(password);
                 ho.setPhoneNumber(phoneNumber);
+                ho.setProfileImage(base64Image); // Set Base64 string
                 success = authDAO.registerHouseOwner(ho);
             }
 

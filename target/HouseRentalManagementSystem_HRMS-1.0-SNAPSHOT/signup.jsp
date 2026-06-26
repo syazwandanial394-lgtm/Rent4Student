@@ -13,7 +13,6 @@
         }
         .animate-blob { animation: blob 7s infinite; }
         .animation-delay-2000 { animation-delay: 2s; }
-        /* Smooth height transition for dynamic fields */
         .dynamic-field { transition: all 0.4s ease-in-out; overflow: hidden; }
         .hidden-field { max-height: 0; opacity: 0; margin-top: 0; }
         .visible-field { max-height: 300px; opacity: 1; margin-top: 1rem; }
@@ -32,11 +31,11 @@
         
         <% if(request.getParameter("error") != null) { %>
             <div class="bg-red-500/20 border border-red-500/50 text-red-200 p-3 rounded-lg mb-6 text-center text-sm font-bold backdrop-blur-sm">
-                Registration failed. Email might already exist.
+                Registration failed. Email or Username might already exist.
             </div>
         <% } %>
 
-        <form action="auth" method="POST" class="flex flex-col gap-4">
+        <form action="auth" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
             <input type="hidden" name="action" value="signup">
             
             <div>
@@ -45,6 +44,16 @@
                     <option value="student">Student</option>
                     <option value="owner">House Owner</option>
                 </select>
+            </div>
+
+            <div>
+                <label class="block text-slate-300 text-xs font-bold mb-1 uppercase tracking-wide">Username</label>
+                <input type="text" name="username" required class="w-full bg-slate-800/50 border border-slate-600 text-white p-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="coolstudent99">
+            </div>
+
+            <div>
+                <label class="block text-slate-300 text-xs font-bold mb-1 uppercase tracking-wide">Profile Picture (Optional)</label>
+                <input type="file" name="profileImage" accept="image/*" class="w-full bg-slate-800/50 border border-slate-600 text-slate-400 p-2 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-orange-500 file:text-white hover:file:bg-orange-600 transition-all cursor-pointer">
             </div>
 
             <div>
@@ -101,13 +110,11 @@
             const locationInput = document.getElementById('locationInput');
 
             if (role === 'student') {
-                // Show Student Fields and make them required
                 studentFields.classList.replace('hidden-field', 'visible-field');
                 uniInput.required = true;
                 facultyInput.required = true;
                 locationInput.required = true;
             } else {
-                // Hide Student Fields and make them NOT required so the form can submit
                 studentFields.classList.replace('visible-field', 'hidden-field');
                 uniInput.required = false;
                 facultyInput.required = false;
@@ -117,7 +124,6 @@
                 locationInput.value = '';
             }
         }
-        // Run once on load just in case
         toggleDynamicFields();
     </script>
 </body>

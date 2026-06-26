@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Rent4Student | Dashboard</title>
+    <title>Rent4Student | Support Tickets</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
@@ -27,13 +27,13 @@
                 <h1 class="text-2xl font-black text-slate-900 tracking-tight">Rent<span class="text-orange-500">4</span>Student</h1>
             </div>
             <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
-                <a href="dashboard" class="text-orange-500 border-b-2 border-orange-500 pb-1">Dashboard</a>
+                <a href="dashboard" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Dashboard</a>
                 <a href="properties" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Properties</a>
                 <a href="applicationController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Applications</a>
                 <a href="rentalController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Rentals</a>
                 <c:choose>
-                <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
-                <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'student'}"><a href="paymentController" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Payments</a></c:when>
+                    <c:when test="${sessionScope.userRole == 'owner'}"><a href="receipts.jsp" class="border-b-2 border-transparent hover:text-orange-500 transition-colors pb-1">Revenue</a></c:when>
                 </c:choose>
             </div>
             <div class="flex items-center gap-2">
@@ -54,66 +54,87 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        <c:choose>
-            <c:when test="${not empty activeRental}">
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl p-10 shadow-xl shadow-orange-200/50 border border-orange-400 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full mix-blend-overlay"></div>
-                    <div class="absolute -bottom-24 -left-12 w-48 h-48 bg-white opacity-10 rounded-full mix-blend-overlay"></div>
-                    <div class="relative z-10 text-white w-full md:w-auto">
-                        <p class="text-orange-100 font-bold tracking-widest text-sm uppercase mb-2 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Current Residence
-                        </p>
-                        <h2 class="text-4xl font-extrabold mb-2 leading-tight">${activeRental.propertyName}</h2>
-                        <div class="text-orange-100 text-lg font-medium flex flex-wrap items-center gap-3 mt-3">
-                            <span class="bg-white/20 px-3 py-1 rounded-lg shadow-sm">RM ${activeRental.rentalRate} / month</span>
-                            <span class="bg-orange-800/30 px-3 py-1 rounded-lg border border-orange-400/30">Started: ${activeRental.startDate}</span>
-                            <c:if test="${not empty activeRental.endDate}"><span class="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold shadow-sm">Ends: ${activeRental.endDate}</span></c:if>
+    <main class="max-w-4xl mx-auto px-6 py-12 relative z-10">
+        <c:if test="${param.success == 'true'}">
+            <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 flex items-center gap-4 shadow-sm">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <p class="text-green-700 text-sm font-bold">Report submitted successfully! Admin will review it shortly.</p>
+            </div>
+        </c:if>
+
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900">My Support Tickets</h2>
+                <p class="text-slate-500 mt-1">Track the status of your reported problems.</p>
+            </div>
+            <button onclick="openReportModal()" class="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> New Ticket
+            </button>
+        </div>
+
+        <div class="space-y-6">
+            <c:forEach items="${ticketList}" var="ticket">
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">${ticket.subject}</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">${ticket.submittedAt}</p>
                         </div>
-                    </div>
-                    <div class="relative z-10 shrink-0 w-full md:w-auto text-center md:text-right">
-                        <a href="paymentController" class="inline-block w-full md:w-auto bg-white text-orange-600 hover:bg-orange-50 font-black py-4 px-8 rounded-xl shadow-lg transition-all mb-3 md:mb-0 md:mr-3">Pay Rent</a>
-                        <a href="rentalController" class="inline-block w-full md:w-auto bg-orange-700/50 hover:bg-orange-700/70 backdrop-blur-sm border border-orange-400 text-white font-bold py-4 px-8 rounded-xl transition-all">View Details</a>
-                    </div>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="bg-white rounded-3xl p-10 shadow-xl shadow-slate-200/40 border border-slate-100 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 transform hover:-translate-y-1 transition-all duration-300">
-                    <div>
-                        <h2 class="text-4xl font-extrabold text-slate-900 mb-2">Welcome to your Dashboard.</h2>
-                        <p class="text-slate-500 text-lg">
-                            <c:choose>
-                                <c:when test="${sessionScope.userRole == 'student'}">Browse available properties, track your applications, and manage your rent all in one secure place.</c:when>
-                                <c:when test="${sessionScope.userRole == 'owner'}">Manage your property listings, review student applications, and track your incoming rent seamlessly.</c:when>
-                                <c:otherwise>System administration portal. Use the navigation to oversee operations.</c:otherwise>
-                            </c:choose>
-                        </p>
-                    </div>
-                    <div class="shrink-0">
                         <c:choose>
-                            <c:when test="${sessionScope.userRole == 'student'}"><a href="properties" class="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all">Find a Property</a></c:when>
-                            <c:when test="${sessionScope.userRole == 'owner'}"><a href="properties" class="inline-block bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all">Manage Properties</a></c:when>
+                            <c:when test="${ticket.status == 'Resolved'}"><span class="bg-green-100 text-green-700 font-bold text-xs px-3 py-1 rounded-full">Resolved</span></c:when>
+                            <c:when test="${ticket.status == 'Reviewed'}"><span class="bg-blue-100 text-blue-700 font-bold text-xs px-3 py-1 rounded-full">Reviewed</span></c:when>
+                            <c:otherwise><span class="bg-slate-100 text-slate-600 font-bold text-xs px-3 py-1 rounded-full">Unread</span></c:otherwise>
                         </c:choose>
                     </div>
-                </div>
-            </c:otherwise>
-        </c:choose>
+                    
+                    <div class="text-slate-600 text-sm mb-6 pb-6 border-b border-slate-100 whitespace-pre-wrap">${ticket.description}</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="properties" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md hover:border-blue-200 transition-all group">
-                <div class="w-14 h-14 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                <div><p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Properties</p><p class="text-2xl font-black text-slate-800 group-hover:text-blue-600 transition-colors">View Hub</p></div>
-            </a>
-            <a href="applicationController" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md hover:border-orange-200 transition-all group">
-                <div class="w-14 h-14 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
-                <div><p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Applications</p><p class="text-2xl font-black text-slate-800 group-hover:text-orange-600 transition-colors">Track Status</p></div>
-            </a>
-            <a href="${sessionScope.userRole == 'student' ? 'paymentController' : 'receipts.jsp'}" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md hover:border-green-200 transition-all group">
-                <div class="w-14 h-14 bg-green-50 text-green-500 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <div><p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Financials</p><p class="text-2xl font-black text-slate-800 group-hover:text-green-600 transition-colors">Manage Rent</p></div>
-            </a>
+                    <c:choose>
+                        <c:when test="${not empty ticket.adminResponse}">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative mt-4">
+                                <div class="absolute -top-3 left-6 bg-slate-50 px-2 text-xs font-black text-slate-400 uppercase">Admin Reply</div>
+                                <p class="text-sm text-slate-700 font-medium leading-relaxed">${ticket.adminResponse}</p>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <p class="text-sm text-slate-400 font-medium italic">Waiting for an administrator to review this ticket...</p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </c:forEach>
+
+            <c:if test="${empty ticketList}">
+                <div class="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-sm">
+                    <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <p class="text-slate-500 font-bold text-lg">You haven't submitted any support tickets yet.</p>
+                </div>
+            </c:if>
         </div>
     </main>
+
+    <div id="reportModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeReportModal()"></div>
+        <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 w-full max-w-md modal-enter" id="reportContent">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                <h2 class="text-2xl font-black text-slate-900">New Support Ticket</h2>
+                <button onclick="closeReportModal()" class="text-slate-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <form action="reportController" method="POST" class="space-y-4">
+                <input type="hidden" name="action" value="submitReport">
+                <input type="hidden" name="userEmail" value="${sessionScope.loggedUser.email}">
+                <input type="hidden" name="userRole" value="${sessionScope.userRole}">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Subject</label>
+                    <input type="text" name="subject" required placeholder="E.g., Payment Bug, Scammer Alert" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-sm font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label>
+                    <textarea name="description" required rows="4" placeholder="Describe the problem in detail..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-sm"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl shadow-lg transition-all mt-2">Submit Ticket</button>
+            </form>
+        </div>
+    </div>
 
     <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300"></div>
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
@@ -155,8 +176,8 @@
                     <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div> My Property Info
                 </a>
             </c:if>
-            <a href="reportController?action=viewTickets" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg></div> My Support Tickets
+            <a href="reportController?action=viewTickets" class="bg-orange-50 flex items-center gap-3 p-3 rounded-xl text-orange-600 font-bold transition-all group">
+                <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg></div> My Support Tickets
             </a>
         </div>
         <div class="p-6 border-t border-slate-100 bg-slate-50">
@@ -180,6 +201,14 @@
                 drawer.classList.add('translate-x-full');
                 setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
             }
+        }
+        function openReportModal() {
+            document.getElementById('reportModal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('reportContent').classList.add('modal-enter-active'); }, 10);
+        }
+        function closeReportModal() {
+            document.getElementById('reportContent').classList.remove('modal-enter-active');
+            setTimeout(() => { document.getElementById('reportModal').classList.add('hidden'); }, 300);
         }
     </script>
 </body>
