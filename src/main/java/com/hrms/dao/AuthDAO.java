@@ -66,6 +66,10 @@ public class AuthDAO {
                 s.setFaculty(rs.getString("faculty"));
                 s.setPreferredLocation(rs.getString("preferred_location"));
                 s.setProfileImage(rs.getString("profile_image"));
+                
+                // --- NEW: GRAB ACCOUNT STATUS FOR SECURITY CHECK ---
+                s.setAccountStatus(rs.getString("account_status")); 
+                
                 return s;
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -88,6 +92,10 @@ public class AuthDAO {
                 ho.setPhoneNumber(rs.getString("phone_number"));
                 ho.setProfileImage(rs.getString("profile_image"));
                 ho.setSubscriptionStatus(rs.getString("subscription_status"));
+                
+                // --- NEW: GRAB ACCOUNT STATUS FOR SECURITY CHECK ---
+                ho.setAccountStatus(rs.getString("account_status")); 
+                
                 return ho;
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -100,11 +108,21 @@ public class AuthDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, status);
             ps.setInt(2, hoId);
-
             return ps.executeUpdate() > 0;
         } catch (Exception e) { 
             e.printStackTrace(); 
             return false;
         }
+    }
+
+    // --- NEW: HANDLE APPEALS FROM BLOCKED USERS ---
+    public void submitAppealTicket(String username, String role, String message) {
+        try (Connection conn = DBUtil.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO support_tickets (sender_name, sender_role, subject, message) VALUES (?, ?, 'ACCOUNT APPEAL', ?)");
+            ps.setString(1, username);
+            ps.setString(2, role);
+            ps.setString(3, message);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 }

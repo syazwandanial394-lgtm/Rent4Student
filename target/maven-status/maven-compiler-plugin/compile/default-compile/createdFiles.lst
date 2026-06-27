@@ -1,4 +1,5 @@
 com\hrms\dao\AuthDAO.class
+com\hrms\controller\AdminController.class
 com\hrms\dao\PaymentDAO.class
 com\hrms\model\Student.class
 com\hrms\controller\PaymentController.class
@@ -25,4 +26,5 @@ com\hrms\controller\ReportController.class
 com\hrms\dao\ReportDAO.class
 com\hrms\model\HouseOwner.class
 com\hrms\dao\HouseOwnerDAO.class
+com\hrms\dao\AdminDAO.class
 com\hrms\dao\StudentDAO.class

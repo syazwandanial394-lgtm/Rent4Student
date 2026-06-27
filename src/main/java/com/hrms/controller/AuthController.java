@@ -39,6 +39,11 @@ public class AuthController extends HttpServlet {
             else if ("student".equals(role)) {
                 Student student = authDAO.loginStudent(request.getParameter("email"), request.getParameter("password"));
                 if (student != null) {
+                    // --- NEW SECURITY CHECK ---
+                    if ("Blocked".equals(student.getAccountStatus()) || "Terminated".equals(student.getAccountStatus())) {
+                        response.sendRedirect("login.jsp?error=blocked&username=" + student.getUsername() + "&role=Student");
+                        return;
+                    }
                     session.setAttribute("loggedUser", student);
                     session.setAttribute("userRole", "student");
                     response.sendRedirect("dashboard");
@@ -47,12 +52,28 @@ public class AuthController extends HttpServlet {
             else if ("owner".equals(role)) {
                 HouseOwner owner = authDAO.loginHouseOwner(request.getParameter("email"), request.getParameter("password"));
                 if (owner != null) {
+                    // --- NEW SECURITY CHECK ---
+                    if ("Blocked".equals(owner.getAccountStatus()) || "Terminated".equals(owner.getAccountStatus())) {
+                        response.sendRedirect("login.jsp?error=blocked&username=" + owner.getUsername() + "&role=Owner");
+                        return;
+                    }
                     session.setAttribute("loggedUser", owner);
                     session.setAttribute("userRole", "owner");
                     response.sendRedirect("dashboard");
                 } else { response.sendRedirect("login.jsp?error=invalid"); }
             }
         } 
+        
+        // --- NEW: HANDLES THE APPEAL SUBMISSION FROM THE RED POPUP ---
+        else if ("submitAppeal".equals(action)) {
+            String username = request.getParameter("username");
+            String role = request.getParameter("role");
+            String message = request.getParameter("appealMessage");
+            
+            authDAO.submitAppealTicket(username, role, message);
+            response.sendRedirect("login.jsp?success=appeal_sent");
+        }
+        
         else if ("logout".equals(action)) {
             session.invalidate();
             response.sendRedirect("login.jsp");
@@ -102,10 +123,11 @@ public class AuthController extends HttpServlet {
                 s.setEmail(email);
                 s.setPassword(password);
                 s.setPhoneNumber(phoneNumber);
-                s.setProfileImage(base64Image); // Set Base64 string
+                s.setProfileImage(base64Image);
                 s.setUniversity(request.getParameter("university"));
                 s.setFaculty(request.getParameter("faculty"));
                 s.setPreferredLocation(request.getParameter("preferredLocation")); 
+                // Newly registered accounts start as Active automatically via DB Default!
                 success = authDAO.registerStudent(s);
             } 
             else if ("owner".equals(role)) {
@@ -115,7 +137,7 @@ public class AuthController extends HttpServlet {
                 ho.setEmail(email);
                 ho.setPassword(password);
                 ho.setPhoneNumber(phoneNumber);
-                ho.setProfileImage(base64Image); // Set Base64 string
+                ho.setProfileImage(base64Image); 
                 success = authDAO.registerHouseOwner(ho);
             }
 

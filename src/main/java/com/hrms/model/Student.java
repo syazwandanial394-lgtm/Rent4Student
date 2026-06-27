@@ -11,6 +11,7 @@ public class Student {
     private String faculty;
     private String preferredLocation;
     private String profileImage;
+    private String accountStatus;
 
     // Getters and Setters
     public int getStudentId() { return studentId; }
@@ -42,4 +43,7 @@ public class Student {
 
     public String getProfileImage() { return profileImage; }
     public void setProfileImage(String profileImage) { this.profileImage = profileImage; }
+    
+    public String getAccountStatus() { return accountStatus; }
+    public void setAccountStatus(String accountStatus) { this.accountStatus = accountStatus; }
 }

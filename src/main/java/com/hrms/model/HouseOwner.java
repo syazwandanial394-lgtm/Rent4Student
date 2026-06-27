@@ -8,6 +8,7 @@ public class HouseOwner {
     private String password;
     private String phoneNumber;
     private String profileImage;
+    private String accountStatus;
     
     // Partner's Premium Subscription Variables restored!
     private String subscriptionStatus;
@@ -40,4 +41,7 @@ public class HouseOwner {
 
     public String getRegistrationDate() { return registrationDate; }
     public void setRegistrationDate(String registrationDate) { this.registrationDate = registrationDate; }
+    
+    public String getAccountStatus() { return accountStatus; }
+    public void setAccountStatus(String accountStatus) { this.accountStatus = accountStatus; }
 }
