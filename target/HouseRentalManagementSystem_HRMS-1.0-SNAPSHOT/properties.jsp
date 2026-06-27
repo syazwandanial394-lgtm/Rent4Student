@@ -223,24 +223,24 @@
 
         <c:choose>
             <c:when test="${subStatus == 'Free'}">
+                <c:if test="${totalHouses >= 1}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="1" />
+            </c:when>
+            <c:when test="${subStatus == 'Standard'}">
                 <c:if test="${totalHouses >= 2}"><c:set var="limitReached" value="true" /></c:if>
                 <c:set var="maxLimit" value="2" />
             </c:when>
-            <c:when test="${subStatus == 'Standard'}">
-                <c:if test="${totalHouses >= 5}"><c:set var="limitReached" value="true" /></c:if>
-                <c:set var="maxLimit" value="5" />
-            </c:when>
             <c:when test="${subStatus == 'Pro'}">
-                <c:if test="${totalHouses >= 7}"><c:set var="limitReached" value="true" /></c:if>
-                <c:set var="maxLimit" value="7" />
+                <c:if test="${totalHouses >= 3}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="3" />
             </c:when>
             <c:when test="${subStatus == 'Premium'}">
                 <c:set var="limitReached" value="false" />
                 <c:set var="maxLimit" value="Unlimited" />
             </c:when>
             <c:otherwise>
-                <c:if test="${totalHouses >= 2}"><c:set var="limitReached" value="true" /></c:if>
-                <c:set var="maxLimit" value="2" />
+                <c:if test="${totalHouses >= 1}"><c:set var="limitReached" value="true" /></c:if>
+                <c:set var="maxLimit" value="1" />
             </c:otherwise>
         </c:choose>
 
