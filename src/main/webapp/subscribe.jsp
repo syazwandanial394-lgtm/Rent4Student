@@ -165,7 +165,7 @@
             </a>
             
             <c:if test="${currentSub != 'Free'}">
-                <form id="formFree" action="subscriptionController" method="POST" class="w-full sm:w-64 m-0">
+                <form id="formCancel" action="subscriptionController" method="POST" class="w-full sm:w-64 m-0">
                     <input type="hidden" name="action" value="free">
                     <input type="hidden" name="hoId" value="${sessionScope.loggedUser.hoId}">
                     

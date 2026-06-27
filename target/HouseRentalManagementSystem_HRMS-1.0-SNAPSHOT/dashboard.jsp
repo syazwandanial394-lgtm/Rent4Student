@@ -108,7 +108,7 @@
                 <div class="w-14 h-14 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
                 <div><p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Applications</p><p class="text-2xl font-black text-slate-800 group-hover:text-orange-600 transition-colors">Track Status</p></div>
             </a>
-            <a href="${sessionScope.userRole == 'student' ? 'paymentController' : 'receipts.jsp'}" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md hover:border-green-200 transition-all group">
+            <a href="${sessionScope.userRole == 'student' ? 'paymentController' : 'paymentController'}" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md hover:border-green-200 transition-all group">
                 <div class="w-14 h-14 bg-green-50 text-green-500 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                 <div><p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Financials</p><p class="text-2xl font-black text-slate-800 group-hover:text-green-600 transition-colors">Manage Rent</p></div>
             </a>
@@ -206,5 +206,31 @@
             }
         }
     </script>
+    <c:if test="${param.error == 'db_connection'}">
+        <div id="dbErrorModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+
+            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all p-8 text-center border-t-8 border-red-500 relative">
+
+                <button onclick="document.getElementById('dbErrorModal').style.display='none'" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-50 border-[6px] border-red-100 mb-6">
+                    <svg class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+
+                <h3 class="text-2xl font-black text-slate-900 mb-2">Connection Error</h3>
+                <p class="text-slate-600 mb-8 leading-relaxed">Could not submit your application. Please check your connection and try again.</p>
+
+                <button type="button" onclick="document.getElementById('dbErrorModal').style.display='none'" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-red-500/30">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </c:if>
 </body>
 </html>

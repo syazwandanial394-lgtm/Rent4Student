@@ -90,7 +90,41 @@ public class PropertyController extends HttpServlet {
         // ==========================================
         if (showingRecommendations) {
             List<Property> allProps = propertyDAO.getAllProperties();
-            request.setAttribute("allPropertiesList", allProps);
+            
+            int itemsPerPage = 12;
+            int currentPage = 1; // Default to page 1
+            
+            // 1. Get the requested page from the URL (e.g., properties?page=2)
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.trim().isEmpty()) {
+                try {
+                    currentPage = Integer.parseInt(pageParam);
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+            
+            // 2. Calculate totals and bounds
+            int totalItems = allProps.size();
+            int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
+            
+            // Safety checks (prevent negative pages or pages beyond the max)
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            
+            // 3. Slice the list to only include 12 items for the current page
+            int startIndex = (currentPage - 1) * itemsPerPage;
+            int endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            
+            List<Property> paginatedList = allProps; 
+            if (totalItems > 0 && startIndex < totalItems) {
+                paginatedList = allProps.subList(startIndex, endIndex);
+            }
+            
+            // 4. Send the sliced list and page variables to the JSP
+            request.setAttribute("allPropertiesList", paginatedList);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
         }
         // ==========================================
 
