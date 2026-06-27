@@ -141,7 +141,16 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <c:forEach items="${propertyList}" var="property">
-                <div class="bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
+                <div onclick="openDetailsModal(this)" 
+                    data-name="<c:out value='${property.propertyName}'/>"
+                    data-desc="<c:out value='${property.description}'/>"
+                    data-rate="${property.rentalRate}"
+                    data-type="${property.propertyType}"
+                    data-address="<c:out value='${property.address}'/>"
+                    data-city="<c:out value='${property.city}'/>"
+                    data-postcode="${property.postcode}"
+                    data-image="${property.propertyImage}"
+                    class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
                     <c:if test="${showingRecommendations}">
                         <div class="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full z-10 shadow-sm flex items-center gap-1">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg> Match
@@ -204,6 +213,72 @@
                 </div>
             </c:if>
         </div>
+            
+        <c:if test="${showingRecommendations}">
+            
+            <div class="mt-16 mb-6 border-b border-slate-200 pb-4 flex justify-between items-end">
+                <h3 class="text-xl font-black text-slate-900">Explore All Properties</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <c:forEach items="${allPropertiesList}" var="property">
+                    <div onclick="openDetailsModal(this)" 
+                        data-name="<c:out value='${property.propertyName}'/>"
+                        data-desc="<c:out value='${property.description}'/>"
+                        data-rate="${property.rentalRate}"
+                        data-type="${property.propertyType}"
+                        data-address="<c:out value='${property.address}'/>"
+                        data-city="<c:out value='${property.city}'/>"
+                        data-postcode="${property.postcode}"
+                        data-image="${property.propertyImage}"
+                        class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
+                        
+                        <div class="h-48 bg-slate-200 relative">
+                            <img src="${not empty property.propertyImage ? property.propertyImage : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover" alt="House">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black uppercase shadow-sm ${property.availabilityStatus == 'Available' ? 'text-green-600' : 'text-red-600'}">${property.availabilityStatus}</div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-slate-900 leading-tight truncate pr-2">${property.propertyName}</h3>
+                                <span class="text-orange-600 font-black text-lg w-24 text-right shrink-0">RM ${property.rentalRate}</span>
+                            </div>
+                            <span class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md mb-2">${property.propertyType}</span>
+                            <p class="text-slate-600 text-sm mb-4 line-clamp-2">${property.description}</p>
+                            <p class="text-slate-500 text-sm mb-4 flex items-center gap-1 font-semibold">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${property.city}, ${property.postcode}
+                            </p>
+                            
+                            <c:choose>
+                                <c:when test="${sessionScope.userRole == 'owner'}">
+                                    <button type="button" 
+                                            onclick="event.stopPropagation(); openEditPropModal(this)"
+                                            data-id="${property.propertyId}"
+                                            data-name="<c:out value='${property.propertyName}'/>"
+                                            data-type="${property.propertyType}"
+                                            data-rate="${property.rentalRate}"
+                                            data-city="<c:out value='${property.city}'/>"
+                                            data-postcode="${property.postcode}"
+                                            data-address="<c:out value='${property.address}'/>"
+                                            data-desc="<c:out value='${property.description}'/>"
+                                            data-status="${property.availabilityStatus}"
+                                            class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">
+                                        Edit Listing
+                                    </button>
+                                </c:when>
+                                <c:when test="${sessionScope.userRole == 'student'}">
+                                    <c:choose>
+                                        <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed">Currently Rented</button></c:when>
+                                        <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed">Application Pending</button></c:when>
+                                        <c:otherwise><button type="button" onclick="event.stopPropagation(); openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')", '<c:out value='${property.propertyName}'/>')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                            </c:choose>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:if>
     </main>
 
     <c:if test="${sessionScope.userRole == 'student' && !hasActiveRental}">
@@ -228,7 +303,106 @@
             function closeModal() { document.getElementById('modalContent').classList.remove('modal-enter-active'); setTimeout(() => { document.getElementById('applicationModal').classList.add('hidden'); }, 300); }
         </script>
     </c:if>
+       
+    <c:if test="${sessionScope.userRole == 'student'}">
+        <div id="detailsModal" onclick="if(event.target === this) closeDetailsModal()" class="fixed inset-0 z-50 hidden cursor-pointer bg-slate-900/60 backdrop-blur-sm overflow-y-auto w-full h-full flex items-center justify-center opacity-0 transition-opacity duration-300">
 
+            <div class="relative bg-white rounded-3xl w-full max-w-3xl mx-4 my-8 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] scale-95 transition-transform duration-300" id="detailsModalContent">
+
+                <button onclick="closeDetailsModal()" class="absolute top-4 right-4 bg-black/30 hover:bg-black/60 text-white rounded-full p-2 z-10 transition-colors shadow-sm backdrop-blur-md">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="h-72 bg-slate-200 shrink-0 relative">
+                    <img id="modalImage" src="" class="w-full h-full object-cover" alt="Property Image">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                    <h2 id="modalName" class="absolute bottom-6 left-8 text-3xl font-extrabold text-white drop-shadow-lg pr-8"></h2>
+                </div>
+
+                <div class="p-8 overflow-y-auto">
+                    <div class="flex justify-between items-start mb-8 pb-6 border-b border-slate-100">
+                        <div>
+                            <span id="modalType" class="inline-block bg-orange-100 text-orange-700 text-sm font-bold px-4 py-1.5 rounded-lg mb-3"></span>
+                            <p class="text-slate-600 flex items-start gap-2">
+                                <svg class="w-5 h-5 text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                <span id="modalAddress" class="leading-relaxed"></span>
+                            </p>
+                        </div>
+                        <div class="text-right shrink-0 ml-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <span class="block text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Monthly Rent</span>
+                            <span class="text-slate-900 font-black text-3xl">RM <span id="modalRate"></span></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">About this property</h3>
+                        <p id="modalDesc" class="text-slate-600 whitespace-pre-wrap leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function openDetailsModal(card) {
+                const modal = document.getElementById('detailsModal');
+                const modalContent = document.getElementById('detailsModalContent');
+
+                // If the user isn't a student, the modal won't exist in the DOM. Just return.
+                if (!modal) return;
+
+                // 1. Extract data from the clicked card
+                const name = card.getAttribute('data-name');
+                const desc = card.getAttribute('data-desc');
+                const rate = card.getAttribute('data-rate');
+                const type = card.getAttribute('data-type');
+                const address = card.getAttribute('data-address');
+                const city = card.getAttribute('data-city');
+                const postcode = card.getAttribute('data-postcode');
+
+                // Fallback to a placeholder if no image exists
+                const rawImage = card.getAttribute('data-image');
+                const image = (rawImage && rawImage.trim() !== '') ? rawImage : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800';
+
+                // 2. Inject data into the modal elements
+                document.getElementById('modalName').textContent = name;
+                document.getElementById('modalDesc').textContent = desc || 'No description provided by the owner.';
+                document.getElementById('modalRate').textContent = rate;
+                document.getElementById('modalType').textContent = type;
+                document.getElementById('modalAddress').textContent = address + ', ' + postcode + ' ' + city;
+                document.getElementById('modalImage').src = image;
+
+                // 3. Show the modal with a smooth fade-in
+                modal.classList.remove('hidden');
+
+                // Slight delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10);
+
+                // Lock the background body scrolling
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDetailsModal() {
+                const modal = document.getElementById('detailsModal');
+                const modalContent = document.getElementById('detailsModalContent');
+
+                if (modal) {
+                    // Trigger fade out animations
+                    modal.classList.add('opacity-0');
+                    modalContent.classList.add('scale-95');
+
+                    // Wait for animation to finish before hiding completely
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = 'auto'; // Unlock scrolling
+                    }, 300);
+                }
+            }
+        </script>
+    </c:if>    
+        
+        
     <c:if test="${sessionScope.userRole == 'owner'}">
         <c:set var="subStatus" value="${sessionScope.loggedUser.subscriptionStatus}" />
         <c:set var="limitReached" value="false" />
@@ -507,5 +681,32 @@
             }
         }
     </script>
+    
+    <c:if test="${param.error == 'db_connection'}">
+        <div id="dbErrorModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+
+            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all p-8 text-center border-t-8 border-red-500 relative">
+
+                <button onclick="document.getElementById('dbErrorModal').style.display='none'" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-50 border-[6px] border-red-100 mb-6">
+                    <svg class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+
+                <h3 class="text-2xl font-black text-slate-900 mb-2">Connection Error</h3>
+                <p class="text-slate-600 mb-8 leading-relaxed">Could not submit your application. Please check your connection and try again.</p>
+
+                <button type="button" onclick="document.getElementById('dbErrorModal').style.display='none'" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-red-500/30">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </c:if>
 </body>
 </html>

@@ -48,15 +48,32 @@ public class ApplicationController extends HttpServlet {
         if ("confirmApply".equals(action)) {
             Student student = (Student) session.getAttribute("loggedUser");
             int propertyId = Integer.parseInt(request.getParameter("propertyId"));
-            
-            boolean hasRental = rentalDAO.hasActiveRental(student.getStudentId());
-            boolean hasPending = applicationDAO.getPendingProperties(student.getStudentId()).contains(propertyId);
-            
-            if (!hasRental && !hasPending) {
-                applicationDAO.applyForProperty(student.getStudentId(), propertyId);
+
+            try {
+                boolean hasRental = rentalDAO.hasActiveRental(student.getStudentId());
+                boolean hasPending = applicationDAO.getPendingProperties(student.getStudentId()).contains(propertyId);
+
+                if (!hasRental && !hasPending) {
+                    // It's good practice to have your DAO return a boolean to confirm it actually inserted!
+                    boolean isApplied = applicationDAO.applyForProperty(student.getStudentId(), propertyId);
+
+                    if (isApplied) {
+                        response.sendRedirect("applicationController?success=true");
+                    } else {
+                        // Fails safely if the query runs but inserts nothing
+                        response.sendRedirect("properties?error=db_connection");
+                    }
+                } else {
+                    // Already applied or renting
+                    response.sendRedirect("applicationController");
+                }
+
+            } catch (Exception e) {
+                // THIS CATCES THE OFF XAMPP / DATABASE CRASH!
+                e.printStackTrace(); 
+                response.sendRedirect("properties?error=db_connection");
             }
-            response.sendRedirect("applicationController");
-        } 
+        }
         else if ("updateStatus".equals(action)) {
             int appId = Integer.parseInt(request.getParameter("applicationId"));
             String newStatus = request.getParameter("status"); 
