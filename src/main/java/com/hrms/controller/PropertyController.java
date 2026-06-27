@@ -73,11 +73,6 @@ public class PropertyController extends HttpServlet {
                 isSearch = true;
                 String effectiveLocation = searchLocation;
                 
-                if (effectiveLocation == null && prefLoc != null && !prefLoc.trim().isEmpty()) {
-                    effectiveLocation = prefLoc;
-                    showingRecommendations = true; 
-                }
-                
                 propertyList = propertyDAO.searchProperties(effectiveLocation, maxPrice, houseType);
             } 
             else {
@@ -89,6 +84,15 @@ public class PropertyController extends HttpServlet {
                 }
             }
         }
+
+        // ==========================================
+        // NEW CODE: FETCH ALL PROPERTIES FOR BOTTOM GRID
+        // ==========================================
+        if (showingRecommendations) {
+            List<Property> allProps = propertyDAO.getAllProperties();
+            request.setAttribute("allPropertiesList", allProps);
+        }
+        // ==========================================
 
         request.setAttribute("propertyList", propertyList);
         request.setAttribute("showingRecommendations", showingRecommendations);
