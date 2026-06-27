@@ -61,12 +61,9 @@ public class ApplicationController extends HttpServlet {
             int appId = Integer.parseInt(request.getParameter("applicationId"));
             String newStatus = request.getParameter("status"); 
             String remarks = request.getParameter("remarks"); 
-            
-            // THE ULTIMATE DEBUGGER: This now returns the exact error string
             String result = applicationDAO.updateApplicationStatus(appId, newStatus, remarks);
             
             if (!"success".equals(result)) {
-                // Safely encode the error message and attach it to the URL
                 response.sendRedirect("applicationController?error=" + java.net.URLEncoder.encode(result, "UTF-8"));
             } else {
                 response.sendRedirect("applicationController");

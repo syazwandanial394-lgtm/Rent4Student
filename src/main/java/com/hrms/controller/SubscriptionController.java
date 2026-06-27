@@ -14,8 +14,6 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/subscriptionController")
 public class SubscriptionController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    
-    // FIXED: Changed from AuthDAO to HouseOwnerDAO
     private HouseOwnerDAO houseOwnerDAO;
 
     public void init() {
@@ -27,97 +25,55 @@ public class SubscriptionController extends HttpServlet {
         
         String action = request.getParameter("action");
         String hoIdParam = request.getParameter("hoId");
-        switch (action) {
-            case "standard":
-               
-                if (hoIdParam != null && !hoIdParam.isEmpty()) {
-                    int hoId = Integer.parseInt(hoIdParam);
-
-                    // 1. Trigger the DAO method to update the column in phpMyAdmin to 'Premium'
-                    boolean isUpdated = houseOwnerDAO.updateSubscriptionStatus(hoId, "Standard");
-
-                    if (isUpdated) {
-                        // 2. VERY IMPORTANT: Update the current session object 
-                        // So the application immediately recognizes them as Premium without logging out
-                        HttpSession session = request.getSession();
-                        HouseOwner loggedUser = (HouseOwner) session.getAttribute("loggedUser");
-
-                        if (loggedUser != null) {
-                            loggedUser.setSubscriptionStatus("Standard");
-                        }
-
-                        // 3. Redirect them back to their properties page with a success flag
-                        response.sendRedirect("properties?status=success");
-                        return;
-                    }
-                }
-
-                // If anything goes wrong, bounce them back to the upgrade screen with an error
-                response.sendRedirect("subscribe.jsp?error=failed");
-            break;
-       
-            case "pro":
-                
-                if (hoIdParam != null && !hoIdParam.isEmpty()) {
-                    int hoId = Integer.parseInt(hoIdParam);
-
-                    // 1. Trigger the DAO method to update the column in phpMyAdmin to 'Premium'
-                    boolean isUpdated = houseOwnerDAO.updateSubscriptionStatus(hoId, "Pro");
-
-                    if (isUpdated) {
-                        // 2. VERY IMPORTANT: Update the current session object 
-                        // So the application immediately recognizes them as Premium without logging out
-                        HttpSession session = request.getSession();
-                        HouseOwner loggedUser = (HouseOwner) session.getAttribute("loggedUser");
-
-                        if (loggedUser != null) {
-                            loggedUser.setSubscriptionStatus("Pro");
-                        }
-
-                        // 3. Redirect them back to their properties page with a success flag
-                        response.sendRedirect("properties?status=success");
-                        return;
-                    }
-                }
-
-                // If anything goes wrong, bounce them back to the upgrade screen with an error
-                response.sendRedirect("subscribe.jsp?error=failed");
-            break;
-              
-            case "premium":
-
-                if (hoIdParam != null && !hoIdParam.isEmpty()) {
-                    int hoId = Integer.parseInt(hoIdParam);
-
-                    // 1. Trigger the DAO method to update the column in phpMyAdmin to 'Premium'
-                    boolean isUpdated = houseOwnerDAO.updateSubscriptionStatus(hoId, "Premium");
-
-                    if (isUpdated) {
-                        // 2. VERY IMPORTANT: Update the current session object 
-                        // So the application immediately recognizes them as Premium without logging out
-                        HttpSession session = request.getSession();
-                        HouseOwner loggedUser = (HouseOwner) session.getAttribute("loggedUser");
-
-                        if (loggedUser != null) {
-                            loggedUser.setSubscriptionStatus("Premium");
-                        }
-
-                        // 3. Redirect them back to their properties page with a success flag
-                        response.sendRedirect("properties?status=success");
-                        return;
-                    }
-                }
-
-                // If anything goes wrong, bounce them back to the upgrade screen with an error
-                response.sendRedirect("subscribe.jsp?error=failed");
-            break;   
+        
+        // Safety check
+        if (hoIdParam == null || hoIdParam.isEmpty() || action == null) {
+            response.sendRedirect("subscribe.jsp?error=failed");
+            return;
         }
-                
+        
+        int hoId = Integer.parseInt(hoIdParam);
+        String newStatus = "";
+
+        // Determine the new tier based on the button clicked
+        switch (action) {
+            case "standard": 
+                newStatus = "Standard"; 
+                break;
+            case "pro":      
+                newStatus = "Pro"; 
+                break;
+            case "premium":  
+                newStatus = "Premium"; 
+                break;
+            case "free":     
+                newStatus = "Free"; // Handles the cancellation!
+                break; 
+            default:
+                response.sendRedirect("subscribe.jsp?error=failed");
+                return;
+        }
+        
+        // Update database
+        boolean isUpdated = houseOwnerDAO.updateSubscriptionStatus(hoId, newStatus);
+        
+        if (isUpdated) {
+            // Update the live session so the UI changes immediately without requiring a relogin
+            HttpSession session = request.getSession();
+            HouseOwner loggedUser = (HouseOwner) session.getAttribute("loggedUser");
+            if (loggedUser != null) {
+                loggedUser.setSubscriptionStatus(newStatus);
+            }
+            
+            // Send back to properties with a success alert
+            response.sendRedirect("properties?success=updated");
+        } else {
+            response.sendRedirect("subscribe.jsp?error=failed");
+        }
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Forwarding any GET requests straight to the JSP page
         response.sendRedirect("subscribe.jsp");
     }
 }

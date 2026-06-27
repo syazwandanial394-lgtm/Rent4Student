@@ -17,7 +17,7 @@ import java.util.List;
 @WebServlet("/dashboard")
 public class DashboardController extends HttpServlet {
     private RentalDAO rentalDAO = new RentalDAO();
-    private StudentDAO studentDAO = new StudentDAO(); // Added the StudentDAO here
+    private StudentDAO studentDAO = new StudentDAO(); 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,9 +31,6 @@ public class DashboardController extends HttpServlet {
 
         if ("student".equals(role)) {
             Student sessionStudent = (Student) session.getAttribute("loggedUser");
-            
-            // --- BUG FIX: THE SESSION REFRESHER ---
-            // Keep the dashboard Avatar icon and name perfectly synced with the DB!
             Student freshStudent = studentDAO.getStudentById(sessionStudent.getStudentId());
             if (freshStudent != null) {
                 session.setAttribute("loggedUser", freshStudent);

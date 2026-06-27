@@ -65,7 +65,6 @@ public class RentalController extends HttpServlet {
             response.sendRedirect("rentalController?success=term_app");
         }
         else if ("sendReminder".equals(action)) {
-            // Wires up the "Send Reminder" button to trigger the green success banner!
             response.sendRedirect("rentalController?action=duePayments&success=reminderSent");
         }
     }

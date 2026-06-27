@@ -36,7 +36,7 @@ public class PaymentDAO {
                     }
                 }
 
-                // 3. Find the House Owner ID (Since your specific receipt table requires it)
+                // 3. Find the House Owner ID 
                 int hoId = 0;
                 String sqlGetOwner = "SELECT p.ho_id FROM rental r JOIN property p ON r.property_id = p.property_id WHERE r.rental_id = ?";
                 try (PreparedStatement psOwner = conn.prepareStatement(sqlGetOwner)) {
@@ -48,7 +48,7 @@ public class PaymentDAO {
                     }
                 }
 
-                // 4. Generate the Official Receipt (Matching YOUR exact database columns!)
+                // 4. Generate the Official Receipt
                 double totalPaid = baseAmount * 1.03; 
                 String sqlRec = "INSERT INTO receipt (payment_id, ho_id, amount_paid, payment_method, issue_date, receipt_status) VALUES (?, ?, ?, ?, CURDATE(), 'Issued')";
                 try (PreparedStatement ps3 = conn.prepareStatement(sqlRec)) {

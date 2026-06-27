@@ -55,7 +55,7 @@
     </nav>
 
     <main class="max-w-4xl mx-auto px-6 py-12 relative z-10">
-        <c:if test="${param.success == 'true'}">
+        <c:if test="${param.success == 'created'}">
             <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 flex items-center gap-4 shadow-sm">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 <p class="text-green-700 text-sm font-bold">Report submitted successfully! Admin will review it shortly.</p>
@@ -77,23 +77,23 @@
                 <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 transition-all hover:shadow-md">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">${ticket.subject}</h3>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">${ticket.submittedAt}</p>
+                            <h3 class="text-xl font-bold text-slate-900">${ticket[1]}</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">${ticket[4]}</p>
                         </div>
                         <c:choose>
-                            <c:when test="${ticket.status == 'Resolved'}"><span class="bg-green-100 text-green-700 font-bold text-xs px-3 py-1 rounded-full">Resolved</span></c:when>
-                            <c:when test="${ticket.status == 'Reviewed'}"><span class="bg-blue-100 text-blue-700 font-bold text-xs px-3 py-1 rounded-full">Reviewed</span></c:when>
-                            <c:otherwise><span class="bg-slate-100 text-slate-600 font-bold text-xs px-3 py-1 rounded-full">Unread</span></c:otherwise>
+                            <c:when test="${ticket[3] == 'Resolved'}"><span class="bg-green-100 text-green-700 font-bold text-xs px-3 py-1 rounded-full">Resolved</span></c:when>
+                            <c:when test="${ticket[3] == 'Dismissed'}"><span class="bg-red-100 text-red-700 font-bold text-xs px-3 py-1 rounded-full">Dismissed</span></c:when>
+                            <c:otherwise><span class="bg-slate-100 text-slate-600 font-bold text-xs px-3 py-1 rounded-full">Pending</span></c:otherwise>
                         </c:choose>
                     </div>
                     
-                    <div class="text-slate-600 text-sm mb-6 pb-6 border-b border-slate-100 whitespace-pre-wrap">${ticket.description}</div>
+                    <div class="text-slate-600 text-sm mb-6 pb-6 border-b border-slate-100 whitespace-pre-wrap">${ticket[2]}</div>
 
                     <c:choose>
-                        <c:when test="${not empty ticket.adminResponse}">
+                        <c:when test="${not empty ticket[5]}">
                             <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative mt-4">
                                 <div class="absolute -top-3 left-6 bg-slate-50 px-2 text-xs font-black text-slate-400 uppercase">Admin Reply</div>
-                                <p class="text-sm text-slate-700 font-medium leading-relaxed">${ticket.adminResponse}</p>
+                                <p class="text-sm text-slate-700 font-medium leading-relaxed">${ticket[5]}</p>
                             </div>
                         </c:when>
                         <c:otherwise>
@@ -119,17 +119,18 @@
                 <h2 class="text-2xl font-black text-slate-900">New Support Ticket</h2>
                 <button onclick="closeReportModal()" class="text-slate-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
+            
             <form action="reportController" method="POST" class="space-y-4">
-                <input type="hidden" name="action" value="submitReport">
-                <input type="hidden" name="userEmail" value="${sessionScope.loggedUser.email}">
-                <input type="hidden" name="userRole" value="${sessionScope.userRole}">
+                <input type="hidden" name="action" value="submitTicket">
+                <input type="hidden" name="username" value="${sessionScope.loggedUser.username}">
+                <input type="hidden" name="role" value="${sessionScope.userRole}">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Subject</label>
                     <input type="text" name="subject" required placeholder="E.g., Payment Bug, Scammer Alert" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-sm font-medium">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label>
-                    <textarea name="description" required rows="4" placeholder="Describe the problem in detail..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-sm"></textarea>
+                    <textarea name="message" required rows="4" placeholder="Describe the problem in detail..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-sm resize-none"></textarea>
                 </div>
                 <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl shadow-lg transition-all mt-2">Submit Ticket</button>
             </form>

@@ -9,8 +9,6 @@ public class Payment {
     private String dueDate;
     private String paymentMethod;
     private String paymentStatus;
-    
-    // Display field for the JSP UI
     private String propertyName;
 
     // Getters and Setters

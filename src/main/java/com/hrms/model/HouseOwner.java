@@ -9,8 +9,6 @@ public class HouseOwner {
     private String phoneNumber;
     private String profileImage;
     private String accountStatus;
-    
-    // Partner's Premium Subscription Variables restored!
     private String subscriptionStatus;
     private String registrationDate;
 

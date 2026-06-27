@@ -57,10 +57,17 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        <c:if test="${param.success == 'added' || param.success == 'updated'}">
+        <c:if test="${param.success == 'added' || param.success == 'updated' || param.success == 'deleted'}">
             <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 flex items-center gap-4 shadow-sm">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 <p class="text-green-700 text-sm font-bold">Property successfully ${param.success}!</p>
+            </div>
+        </c:if>
+
+        <c:if test="${param.error == 'delete_failed'}">
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center gap-4 shadow-sm">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <p class="text-red-700 text-sm font-bold">Cannot delete property. There might be active applications or rentals tied to it.</p>
             </div>
         </c:if>
 
@@ -156,20 +163,28 @@
                         </p>
                         <c:choose>
                             <c:when test="${sessionScope.userRole == 'owner'}">
-                                <button type="button" 
-                                        onclick="openEditPropModal(this)"
-                                        data-id="${property.propertyId}"
-                                        data-name="<c:out value='${property.propertyName}'/>"
-                                        data-type="${property.propertyType}"
-                                        data-rate="${property.rentalRate}"
-                                        data-city="<c:out value='${property.city}'/>"
-                                        data-postcode="${property.postcode}"
-                                        data-address="<c:out value='${property.address}'/>"
-                                        data-desc="<c:out value='${property.description}'/>"
-                                        data-status="${property.availabilityStatus}"
-                                        class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">
-                                    Edit Listing
-                                </button>
+                                <div class="flex gap-2">
+                                    <button type="button" 
+                                            onclick="openEditPropModal(this)"
+                                            data-id="${property.propertyId}"
+                                            data-name="<c:out value='${property.propertyName}'/>"
+                                            data-type="${property.propertyType}"
+                                            data-rate="${property.rentalRate}"
+                                            data-city="<c:out value='${property.city}'/>"
+                                            data-postcode="${property.postcode}"
+                                            data-address="<c:out value='${property.address}'/>"
+                                            data-desc="<c:out value='${property.description}'/>"
+                                            data-status="${property.availabilityStatus}"
+                                            class="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors text-sm">
+                                        Edit Listing
+                                    </button>
+                                    
+                                    <button type="button" onclick="openDeleteModal('${property.propertyId}')" class="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-colors flex items-center justify-center" title="Delete Property">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </c:when>
                             <c:when test="${sessionScope.userRole == 'student'}">
                                 <c:choose>
@@ -215,8 +230,6 @@
     </c:if>
 
     <c:if test="${sessionScope.userRole == 'owner'}">
-        
-
         <c:set var="subStatus" value="${sessionScope.loggedUser.subscriptionStatus}" />
         <c:set var="limitReached" value="false" />
         <c:set var="maxLimit" value="0" />
@@ -343,11 +356,31 @@
             </div>
         </div>
 
+        <div id="deletePropModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm modal-enter text-center" id="deletePropContent">
+                
+                <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                
+                <h3 class="text-2xl font-black text-slate-900 mb-2">Delete Property</h3>
+                <p class="text-slate-500 text-sm mb-8 leading-relaxed">Are you absolutely sure you want to delete this listing? This action cannot be undone.</p>
+
+                <form id="deletePropForm" action="properties" method="POST" class="flex gap-3">
+                    <input type="hidden" name="action" value="deleteProperty">
+                    <input type="hidden" name="propertyId" id="deletePropId" value="">
+                    
+                    <button type="button" onclick="closeDeleteModal()" class="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-3 rounded-xl transition-colors text-sm">Cancel</button>
+                    <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-red-500/30 transition-all text-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+
         <script>
             function openAddPropModal() { document.getElementById('addPropModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('addPropContent').classList.add('modal-enter-active'); }, 10); }
             function closeAddPropModal() { document.getElementById('addPropContent').classList.remove('modal-enter-active'); setTimeout(() => { document.getElementById('addPropModal').classList.add('hidden'); }, 300); }
             
-            // Edit Modal Controller - Extracts data attributes safely
             function openEditPropModal(button) {
                 document.getElementById('editPropId').value = button.getAttribute('data-id');
                 document.getElementById('editPropName').value = button.getAttribute('data-name');
@@ -365,6 +398,16 @@
             function closeEditPropModal() {
                 document.getElementById('editPropContent').classList.remove('modal-enter-active');
                 setTimeout(() => { document.getElementById('editPropModal').classList.add('hidden'); }, 300);
+            }
+
+            function openDeleteModal(id) {
+                document.getElementById('deletePropId').value = id;
+                document.getElementById('deletePropModal').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('deletePropContent').classList.add('modal-enter-active'); }, 10);
+            }
+            function closeDeleteModal() {
+                document.getElementById('deletePropContent').classList.remove('modal-enter-active');
+                setTimeout(() => { document.getElementById('deletePropModal').classList.add('hidden'); }, 300);
             }
         </script>
     </c:if>

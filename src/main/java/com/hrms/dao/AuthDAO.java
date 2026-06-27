@@ -67,8 +67,8 @@ public class AuthDAO {
                 s.setPreferredLocation(rs.getString("preferred_location"));
                 s.setProfileImage(rs.getString("profile_image"));
                 
-                // --- NEW: GRAB ACCOUNT STATUS FOR SECURITY CHECK ---
-                s.setAccountStatus(rs.getString("account_status")); 
+                try { s.setAccountStatus(rs.getString("account_status")); } 
+                catch (Exception e) { s.setAccountStatus("Active"); }
                 
                 return s;
             }
@@ -91,10 +91,12 @@ public class AuthDAO {
                 ho.setPassword(rs.getString("password"));
                 ho.setPhoneNumber(rs.getString("phone_number"));
                 ho.setProfileImage(rs.getString("profile_image"));
-                ho.setSubscriptionStatus(rs.getString("subscription_status"));
                 
-                // --- NEW: GRAB ACCOUNT STATUS FOR SECURITY CHECK ---
-                ho.setAccountStatus(rs.getString("account_status")); 
+                try { ho.setSubscriptionStatus(rs.getString("subscription_status")); } 
+                catch (Exception e) { ho.setSubscriptionStatus("Free"); }
+                
+                try { ho.setAccountStatus(rs.getString("account_status")); } 
+                catch (Exception e) { ho.setAccountStatus("Active"); }
                 
                 return ho;
             }
@@ -103,7 +105,7 @@ public class AuthDAO {
     }
     
     public boolean updateSubscriptionStatus(int hoId, String status) {
-        String sql = "UPDATE House_Owner SET subscription_status = ? WHERE ho_id = ?";
+        String sql = "UPDATE house_owner SET subscription_status = ? WHERE ho_id = ?";
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, status);
@@ -115,7 +117,6 @@ public class AuthDAO {
         }
     }
 
-    // --- NEW: HANDLE APPEALS FROM BLOCKED USERS ---
     public void submitAppealTicket(String username, String role, String message) {
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement("INSERT INTO support_tickets (sender_name, sender_role, subject, message) VALUES (?, ?, 'ACCOUNT APPEAL', ?)");

@@ -104,32 +104,35 @@ public class PropertyController extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
 
-        // --- BASE64 IMAGE UPLOAD LOGIC ---
         String base64Image = null; 
-        try {
-            Part filePart = request.getPart("propertyImage");
-            if (filePart != null && filePart.getSize() > 0) {
-                InputStream inputStream = filePart.getInputStream();
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
+        
+        // FIX: ONLY attempt to process an image upload if the user is Adding or Editing a property!
+        if ("addProperty".equals(action) || "updateProperty".equals(action)) {
+            try {
+                Part filePart = request.getPart("propertyImage");
+                if (filePart != null && filePart.getSize() > 0) {
+                    InputStream inputStream = filePart.getInputStream();
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    
+                    byte[] imageBytes = outputStream.toByteArray();
+                    String base64Data = Base64.getEncoder().encodeToString(imageBytes);
+                    String contentType = filePart.getContentType(); 
+                    
+                    base64Image = "data:" + contentType + ";base64," + base64Data;
+                    
+                    inputStream.close();
+                    outputStream.close();
                 }
-                
-                byte[] imageBytes = outputStream.toByteArray();
-                String base64Data = Base64.getEncoder().encodeToString(imageBytes);
-                String contentType = filePart.getContentType(); 
-                
-                base64Image = "data:" + contentType + ";base64," + base64Data;
-                
-                inputStream.close();
-                outputStream.close();
+            } catch (Exception e) {
+                System.out.println("====== BASE64 IMAGE ENCODING ERROR (PROPERTY) ======");
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            System.out.println("====== BASE64 IMAGE ENCODING ERROR (PROPERTY) ======");
-            e.printStackTrace();
         }
 
         if ("addProperty".equals(action)) {
@@ -144,7 +147,7 @@ public class PropertyController extends HttpServlet {
             p.setCity(request.getParameter("city"));
             p.setPostcode(request.getParameter("postcode"));
             p.setRentalRate(Double.parseDouble(request.getParameter("rentalRate")));
-            p.setPropertyImage(base64Image); // Attach the image to the model
+            p.setPropertyImage(base64Image);
 
             if (propertyDAO.addProperty(p)) {
                 response.sendRedirect("properties?success=added");
@@ -152,8 +155,7 @@ public class PropertyController extends HttpServlet {
                 response.sendRedirect("properties?error=add_failed");
             }
         }
-
-        if ("updateProperty".equals(action)) {
+        else if ("updateProperty".equals(action)) {
             try {
                 Property property = new Property();
                 property.setPropertyId(Integer.parseInt(request.getParameter("propertyId")));
@@ -177,6 +179,21 @@ public class PropertyController extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendRedirect("properties?error=invalid_input");
+            }
+        }
+        else if ("deleteProperty".equals(action)) {
+            try {
+                int propertyId = Integer.parseInt(request.getParameter("propertyId"));
+                boolean success = propertyDAO.deleteProperty(propertyId);
+                
+                if (success) {
+                    response.sendRedirect("properties?success=deleted");
+                } else {
+                    response.sendRedirect("properties?error=delete_failed");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("properties?error=invalid_id");
             }
         }
     }

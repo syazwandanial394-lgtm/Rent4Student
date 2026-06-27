@@ -10,7 +10,6 @@ public class HouseOwnerDAO {
 
     public boolean updateHouseOwnerProfile(HouseOwner o) {
         try (Connection conn = DBUtil.getConnection()) {
-            // FIXED: Added username and profile_image to the UPDATE statement
             PreparedStatement ps = conn.prepareStatement(
                 "UPDATE house_owner SET username = ?, full_name = ?, email = ?, phone_number = ?, profile_image = ? WHERE ho_id = ?"
             );

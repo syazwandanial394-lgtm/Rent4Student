@@ -11,7 +11,7 @@ public class Property {
     private String postcode;
     private double rentalRate;
     private String availabilityStatus;
-    private String propertyImage; // NEW: Holds the Base64 Image
+    private String propertyImage; 
 
     // --- GETTERS & SETTERS ---
 
