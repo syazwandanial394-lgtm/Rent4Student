@@ -42,7 +42,6 @@ public class RentalDAO {
         return list;
     }
 
-    // THE NEW METHOD: Specifically filters out only the pending payments!
     public List<Rental> getDuePaymentsByOwner(int hoId) {
         List<Rental> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
@@ -93,7 +92,6 @@ public class RentalDAO {
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    // Helper method to keep code clean
     private Rental extractRental(ResultSet rs) throws Exception {
         Rental r = new Rental();
         r.setRentalId(rs.getInt("rental_id"));

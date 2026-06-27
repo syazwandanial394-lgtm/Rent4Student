@@ -10,7 +10,6 @@ public class StudentDAO {
 
     public boolean updateStudentProfile(Student s) {
         try (Connection conn = DBUtil.getConnection()) {
-            // FIXED: Added profile_image to the UPDATE statement
             PreparedStatement ps = conn.prepareStatement(
                 "UPDATE student SET username = ?, full_name = ?, email = ?, phone_number = ?, university = ?, preferred_location = ?, faculty = ?, profile_image = ? WHERE student_id = ?"
             );
@@ -47,7 +46,6 @@ public class StudentDAO {
                 student.setUniversity(rs.getString("university"));
                 student.setPreferredLocation(rs.getString("preferred_location"));
                 student.setFaculty(rs.getString("faculty"));
-                // FIXED: Added profile_image retrieval
                 student.setProfileImage(rs.getString("profile_image"));
             }
         } catch (Exception e) {

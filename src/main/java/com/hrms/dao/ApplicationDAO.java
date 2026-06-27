@@ -91,7 +91,6 @@ public class ApplicationDAO {
         return list;
     }
 
-    // THE ULTIMATE DEBUGGING FIX: Returns the exact SQL error string
     public String updateApplicationStatus(int applicationId, String status, String remarks) {
         if (remarks == null) remarks = ""; 
 
@@ -159,7 +158,6 @@ public class ApplicationDAO {
                     
                 } catch (Exception ex) {
                     conn.rollback(); 
-                    // This grabs the EXACT reason the database crashed and sends it to the UI
                     return "SQL Error: " + ex.getMessage();
                 } finally {
                     conn.setAutoCommit(true); 

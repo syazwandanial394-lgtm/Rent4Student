@@ -7,8 +7,6 @@ public class Application {
     private String applicationDate;
     private String status; // Pending, Approved, Rejected, Cancelled
     private String remarks;
-
-    // Extra fields to make displaying data on the JSP easier
     private String propertyName;
     private String studentName;
 

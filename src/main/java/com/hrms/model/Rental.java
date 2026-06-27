@@ -9,11 +9,7 @@ public class Rental {
     private double rentalRate;
     private String status;
     private String terminationReason;
-    
-    // NEW: To track the payment loop
     private String paymentStatus; 
-
-    // Used for JOIN queries to make the UI easier
     private String propertyName;
     private String studentName;
 

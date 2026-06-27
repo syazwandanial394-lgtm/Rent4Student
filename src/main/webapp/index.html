@@ -6,7 +6,6 @@
     <title>Rent4Student | Smart Rental Solutions</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom Scroll Reveal Classes */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -16,7 +15,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* Floating Blob Animation */
         @keyframes blob {
             0% { transform: translate(0px, 0px) scale(1); }
             33% { transform: translate(30px, -50px) scale(1.1); }
@@ -36,9 +34,6 @@
                     <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/>
                 </svg>
                 <h1 class="text-3xl font-black text-slate-900 tracking-tight">Rent<span class="text-orange-500">4</span>Student</h1>
-            </div>
-            <div class="hidden md:flex gap-8 text-sm font-bold text-slate-600">
-                <a href="#how-it-works" class="hover:text-orange-500 transition-colors">How It Works</a>
             </div>
             <div class="flex gap-4">
                 <a href="login.jsp" class="font-bold text-slate-700 hover:text-slate-900 px-4 py-2 transition">Log In</a>
@@ -82,7 +77,7 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 transform hover:-translate-y-2 reveal">
+                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-orange-200/50 transition-all duration-500 transform hover:-translate-y-2 reveal">
                     <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
@@ -98,7 +93,7 @@
                     <p class="text-slate-600 leading-relaxed">No more printing documents. Apply for properties, track your status, and sign agreements directly from your dashboard.</p>
                 </div>
 
-                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 transform hover:-translate-y-2 reveal" style="transition-delay: 200ms;">
+                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-orange-200/50 transition-all duration-500 transform hover:-translate-y-2 reveal" style="transition-delay: 200ms;">
                     <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                     </div>
@@ -128,11 +123,11 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
-                        observer.unobserve(entry.target); // Only animate once
+                        observer.unobserve(entry.target); 
                     }
                 });
             }, {
-                threshold: 0.15, // Trigger when 15% of the element is visible
+                threshold: 0.15, 
                 rootMargin: "0px 0px -50px 0px"
             });
 

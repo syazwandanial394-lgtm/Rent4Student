@@ -12,24 +12,18 @@
         @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
         .animate-blob { animation: blob 7s infinite; }
         
-        /* THE FIX: PRINT SPECIFIC CSS */
         @media print {
-            /* Force the printer into landscape mode so wide tables fit */
             @page { size: landscape; margin: 1cm; }
             
-            /* Remove scroll boxes so the table naturally expands */
             body, main, .overflow-x-auto { overflow: visible !important; display: block !important; }
             
-            /* Hide UI elements that shouldn't be printed */
             nav, .animate-blob, #profileDrawer, #profileBackdrop, .print-hide { display: none !important; }
             
-            /* Clean up table formatting for paper */
             table { width: 100% !important; border-collapse: collapse !important; font-size: 12pt !important; }
             th, td { padding: 12px 8px !important; white-space: normal !important; border-bottom: 1px solid #e2e8f0 !important; }
             .bg-slate-50 { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
             
-            /* Remove main container padding so it uses the whole page */
             main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
         }
     </style>
@@ -66,21 +60,18 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-slate-900">Revenue Ledger</h2>
                 <p class="text-slate-500 mt-1">Track your incoming rent payments and official receipts.</p>
             </div>
-            <!-- Added a dedicated Print Button (hides itself when printing) -->
             <button onclick="window.print()" class="print-hide bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Print to PDF
             </button>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-            <!-- The scrollable box for mobile devices -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>

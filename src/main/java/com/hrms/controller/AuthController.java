@@ -29,8 +29,13 @@ public class AuthController extends HttpServlet {
         if ("login".equals(action)) {
             String role = request.getParameter("role");
             
+            if (role == null || role.trim().isEmpty()) {
+                response.sendRedirect("login.jsp?error=invalid");
+                return;
+            }
+            
             if ("admin".equals(role)) {
-                if ("admin@rentease.com".equals(request.getParameter("email")) && "admin123".equals(request.getParameter("password"))) {
+                if ("admin@rent4student.com".equals(request.getParameter("email")) && "admin123".equals(request.getParameter("password"))) {
                     session.setAttribute("userRole", "admin");
                     session.setAttribute("adminName", "System Administrator");
                     response.sendRedirect("admin-dashboard.jsp");
@@ -39,7 +44,7 @@ public class AuthController extends HttpServlet {
             else if ("student".equals(role)) {
                 Student student = authDAO.loginStudent(request.getParameter("email"), request.getParameter("password"));
                 if (student != null) {
-                    // --- NEW SECURITY CHECK ---
+                    // --- SECURITY CHECK: Is the account blocked? ---
                     if ("Blocked".equals(student.getAccountStatus()) || "Terminated".equals(student.getAccountStatus())) {
                         response.sendRedirect("login.jsp?error=blocked&username=" + student.getUsername() + "&role=Student");
                         return;
@@ -52,7 +57,7 @@ public class AuthController extends HttpServlet {
             else if ("owner".equals(role)) {
                 HouseOwner owner = authDAO.loginHouseOwner(request.getParameter("email"), request.getParameter("password"));
                 if (owner != null) {
-                    // --- NEW SECURITY CHECK ---
+                    // --- SECURITY CHECK: Is the account blocked? ---
                     if ("Blocked".equals(owner.getAccountStatus()) || "Terminated".equals(owner.getAccountStatus())) {
                         response.sendRedirect("login.jsp?error=blocked&username=" + owner.getUsername() + "&role=Owner");
                         return;
@@ -64,7 +69,7 @@ public class AuthController extends HttpServlet {
             }
         } 
         
-        // --- NEW: HANDLES THE APPEAL SUBMISSION FROM THE RED POPUP ---
+        // --- HANDLES THE APPEAL SUBMISSION FROM THE RED POPUP ---
         else if ("submitAppeal".equals(action)) {
             String username = request.getParameter("username");
             String role = request.getParameter("role");
@@ -127,7 +132,6 @@ public class AuthController extends HttpServlet {
                 s.setUniversity(request.getParameter("university"));
                 s.setFaculty(request.getParameter("faculty"));
                 s.setPreferredLocation(request.getParameter("preferredLocation")); 
-                // Newly registered accounts start as Active automatically via DB Default!
                 success = authDAO.registerStudent(s);
             } 
             else if ("owner".equals(role)) {

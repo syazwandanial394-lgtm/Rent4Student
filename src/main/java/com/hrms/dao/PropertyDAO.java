@@ -24,7 +24,7 @@ public class PropertyDAO {
             ps.setString(6, p.getCity());
             ps.setString(7, p.getPostcode());
             ps.setDouble(8, p.getRentalRate());
-            ps.setString(9, p.getPropertyImage()); // NEW: Save image to DB
+            ps.setString(9, p.getPropertyImage()); 
             
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -35,7 +35,6 @@ public class PropertyDAO {
     
     public boolean updateProperty(Property property) {
         boolean rowUpdated = false;
-        // COALESCE ensures that if no new image is provided, it keeps the old one
         String sql = "UPDATE property SET property_name = ?, property_type = ?, address = ?, description = ?, rental_rate = ?, availability_status = ?, city = ?, postcode = ?, property_image = COALESCE(?, property_image) WHERE property_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
@@ -76,7 +75,7 @@ public class PropertyDAO {
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
                 p.setAvailabilityStatus(rs.getString("availability_status"));
-                p.setPropertyImage(rs.getString("property_image")); // NEW
+                p.setPropertyImage(rs.getString("property_image"));
                 list.add(p);
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -100,7 +99,7 @@ public class PropertyDAO {
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
                 p.setAvailabilityStatus(rs.getString("availability_status"));
-                p.setPropertyImage(rs.getString("property_image")); // NEW
+                p.setPropertyImage(rs.getString("property_image"));
                 list.add(p);
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -147,12 +146,13 @@ public class PropertyDAO {
                 p.setPostcode(rs.getString("postcode"));
                 p.setRentalRate(rs.getDouble("rental_rate"));
                 p.setAvailabilityStatus(rs.getString("availability_status"));
-                p.setPropertyImage(rs.getString("property_image")); // NEW
+                p.setPropertyImage(rs.getString("property_image"));
                 list.add(p);
             }
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
+
     public int getTotalPropertiesByOwner(int hoId) {
         int totalCount = 0;
         String sql = "SELECT COUNT(*) FROM property WHERE ho_id = ?";
@@ -164,14 +164,24 @@ public class PropertyDAO {
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
-                // Retrieves the count from the first column of the result
                 totalCount = rs.getInt(1); 
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         return totalCount;
     }
     
+    public boolean deleteProperty(int propertyId) {
+        String sql = "DELETE FROM property WHERE property_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, propertyId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error deleting property: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

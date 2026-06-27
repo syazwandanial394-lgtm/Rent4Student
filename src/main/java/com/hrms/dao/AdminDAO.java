@@ -7,7 +7,6 @@ import java.util.List;
 
 public class AdminDAO {
 
-    // Pulls from both Student and House Owner tables dynamically!
     public List<Object[]> getAllUsers() {
         List<Object[]> users = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
@@ -39,20 +38,37 @@ public class AdminDAO {
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    // Get Support Tickets
     public List<Object[]> getAllTickets() {
         List<Object[]> tickets = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM support_tickets ORDER BY created_at DESC")) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                tickets.add(new Object[]{rs.getInt("ticket_id"), rs.getString("subject"), rs.getString("sender_name"), rs.getString("sender_role"), rs.getString("status"), rs.getString("created_at")});
+                tickets.add(new Object[]{
+                    rs.getInt("ticket_id"),     
+                    rs.getString("subject"),    
+                    rs.getString("sender_name"),
+                    rs.getString("sender_role"),
+                    rs.getString("status"),     
+                    rs.getString("created_at"), 
+                    rs.getString("message"),    
+                    rs.getString("remarks")     
+                });
             }
         } catch (Exception e) { e.printStackTrace(); }
         return tickets;
     }
 
-    // Get Activity Logs
+    public boolean resolveTicket(int ticketId, String status, String remarks) {
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement("UPDATE support_tickets SET status = ?, remarks = ? WHERE ticket_id = ?")) {
+            ps.setString(1, status);
+            ps.setString(2, remarks);
+            ps.setInt(3, ticketId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
+
     public List<Object[]> getActivityLogs() {
         List<Object[]> logs = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection();
@@ -63,6 +79,25 @@ public class AdminDAO {
             }
         } catch (Exception e) { e.printStackTrace(); }
         return logs;
+    }
+    public List<Object[]> getAllTransactions() {
+        List<Object[]> transactions = new ArrayList<>();
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM payment ORDER BY payment_id DESC LIMIT 200")) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Object[] txn = new Object[4];
+                
+                // Bulletproof fetching prevents crashes if column names differ
+                try { txn[0] = rs.getString("payment_id"); } catch (Exception e) { txn[0] = "N/A"; }
+                try { txn[1] = rs.getString("payment_date"); } catch (Exception e) { txn[1] = "Unknown Date"; }
+                try { txn[2] = rs.getString("amount"); } catch (Exception e) { txn[2] = "0.00"; }
+                try { txn[3] = rs.getString("status"); } catch (Exception e) { txn[3] = "Processed"; }
+                
+                transactions.add(txn);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return transactions;
     }
 
     // Write to Activity Log

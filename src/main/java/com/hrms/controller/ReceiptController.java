@@ -19,15 +19,13 @@ public class ReceiptController extends HttpServlet {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("userRole");
         
-        // Intercept House Owners and pipe their specific receipts instead
         if ("owner".equals(role)) {
             HouseOwner owner = (HouseOwner) session.getAttribute("loggedUser");
             request.setAttribute("receiptList", receiptDAO.getReceiptsByOwner(owner.getHoId()));
             request.getRequestDispatcher("receipts.jsp").forward(request, response);
-            return; // Stops execution here so it doesn't run the admin code below
+            return; 
         }
 
-        // Fetch all receipts
         if ("admin".equals(role)) {
             request.setAttribute("receiptList", receiptDAO.getReceipts());
             request.getRequestDispatcher("receipts.jsp").forward(request, response);

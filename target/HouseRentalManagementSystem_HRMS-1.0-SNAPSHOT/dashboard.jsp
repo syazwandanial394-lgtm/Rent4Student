@@ -134,30 +134,24 @@
             <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
-            <c:choose >
+            <c:choose>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Premium Owner Unlocked
-                    </div>
+                    <a href="subscribe.jsp" title="Manage Subscription" class="flex w-full items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-amber-500/20 border border-yellow-300/40 transform hover:-translate-y-0.5 transition-all duration-200 hover:shadow-amber-500/40 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                        Manage Premium
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Pro'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-600 text-slate-950 font-white rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-silver-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Pro Owner Unlocked
-                    </div>
+                    <a href="subscribe.jsp" title="Manage Subscription" class="flex w-full items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-slate-500/20 border border-slate-300/50 transform hover:-translate-y-0.5 transition-all duration-200 hover:shadow-slate-500/40 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                        Manage Pro Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Standard'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-glate-800 to-gray-200 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-slate-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Standard Ownership
-                    </div>
+                    <a href="subscribe.jsp" title="Manage Subscription" class="flex w-full items-center justify-center gap-3 px-6 py-3.5 bg-slate-200 text-slate-900 font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-slate-500/10 border border-slate-300/50 transform hover:-translate-y-0.5 transition-all duration-200 hover:shadow-slate-500/30 hover:bg-slate-300 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                        Manage Standard
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Free'}">
                     <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group">
