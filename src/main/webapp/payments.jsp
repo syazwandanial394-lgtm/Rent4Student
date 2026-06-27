@@ -17,10 +17,52 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .modal-enter { opacity: 0; transform: scale(0.95); transition: all 0.3s ease-out; }
         .modal-enter-active { opacity: 1; transform: scale(1); }
+        
+        /* UPDATED: Bulletproof Print CSS to prevent 2-page blank splits */
         @media print {
+            @page { size: portrait; margin: 1cm; }
+            
+            /* Hide everything by default... */
             body * { visibility: hidden; }
+            
+            /* ...Except the receipt and its children */
             #receiptContent, #receiptContent * { visibility: visible; }
-            #receiptContent { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+            
+            /* Force the body and HTML to reset height so it doesn't trigger page 2 */
+            html, body {
+                height: auto !important;
+                min-height: auto !important;
+                overflow: visible !important;
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Strip the 'fixed' and 'flex' centering off the modal wrapper */
+            #receiptModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Snap the actual receipt card to the top left */
+            #receiptContent { 
+                position: relative !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                margin: 0 !important;
+                transform: none !important;
+            }
+
             .no-print { display: none !important; }
         }
     </style>
@@ -216,7 +258,7 @@
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner overflow-hidden border-2 border-white">
+                <div class="w-14 h-14 shrink-0 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner overflow-hidden border-2 border-white">
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>

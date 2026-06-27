@@ -231,7 +231,7 @@
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner overflow-hidden border-2 border-white">
+                <div class="w-14 h-14 shrink-0 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-2xl shadow-inner overflow-hidden border-2 border-white">
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
