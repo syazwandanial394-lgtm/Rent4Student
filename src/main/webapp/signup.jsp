@@ -74,7 +74,7 @@
 
                 <div>
                     <label class="block text-slate-300 text-xs font-bold mb-1 uppercase tracking-wide">Full Name</label>
-                    <input type="text" name="fullName" required class="w-full bg-slate-800/50 border border-slate-600 text-white p-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="John Doe">
+                    <input type="text" name="fullName" required class="w-full bg-slate-800/50 border border-slate-600 text-white p-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Ali bin Abu">
                 </div>
 
                 <div>
@@ -103,7 +103,7 @@
                     </div>
                     <div class="col-span-2">
                         <label class="block text-slate-300 text-xs font-bold mb-1 uppercase tracking-wide">Preferred Location</label>
-                        <input type="text" id="locationInput" name="preferredLocation" class="w-full bg-slate-800/50 border border-slate-600 text-white p-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="e.g. Shah Alam, Kuala Terengganu">
+                        <input type="text" id="locationInput" name="preferredLocation" class="w-full bg-slate-800/50 border border-slate-600 text-white p-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="e.g Kuala Terengganu, Kuala Nerus">
                     </div>
                 </div>
                 

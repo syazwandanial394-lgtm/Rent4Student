@@ -11,17 +11,27 @@
     <style>
         @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
         .animate-blob { animation: blob 7s infinite; }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .modal-enter { opacity: 0; transform: scale(0.95); transition: all 0.3s ease-out; }
-        .modal-enter-active { opacity: 1; transform: scale(1); }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+        
+        @media print {
+            @page { size: landscape; margin: 1cm; }
+            
+            body, main, .overflow-x-auto { overflow: visible !important; display: block !important; }
+            
+            nav, .animate-blob, #profileDrawer, #profileBackdrop, .print-hide { display: none !important; }
+            
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 12pt !important; }
+            th, td { padding: 12px 8px !important; white-space: normal !important; border-bottom: 1px solid #e2e8f0 !important; }
+            .bg-slate-50 { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+            
+            main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
-    <div class="absolute top-40 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
 
+    <!-- Navigation -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm relative z-[60]">
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -141,6 +151,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <c:forEach items="${propertyList}" var="property">
+                <!-- ADDED 'relative' CLASS HERE TO TRAP THE MATCH BADGE -->
                 <div onclick="openDetailsModal(this)" 
                     data-name="<c:out value='${property.propertyName}'/>"
                     data-desc="<c:out value='${property.description}'/>"
@@ -150,7 +161,8 @@
                     data-city="<c:out value='${property.city}'/>"
                     data-postcode="${property.postcode}"
                     data-image="${property.propertyImage}"
-                    class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                    class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative">
+                    
                     <c:if test="${showingRecommendations}">
                         <div class="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full z-10 shadow-sm flex items-center gap-1">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg> Match
@@ -170,6 +182,7 @@
                         <p class="text-slate-500 text-sm mb-6 flex items-center gap-1 font-semibold mt-auto">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${property.city}, ${property.postcode}
                         </p>
+                        
                         <c:choose>
                             <c:when test="${sessionScope.userRole == 'owner'}">
                                 <div class="flex items-stretch gap-2 mt-auto">
@@ -202,8 +215,8 @@
                             </c:when>
                             <c:when test="${sessionScope.userRole == 'student'}">
                                 <c:choose>
-                                    <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed">Currently Rented</button></c:when>
-                                    <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed">Application Pending</button></c:when>
+                                    <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed mt-auto">Currently Rented</button></c:when>
+                                    <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed mt-auto">Application Pending</button></c:when>
                                     <c:otherwise><button type="button" onclick="event.stopPropagation(); openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')" class="w-full ${showingRecommendations ? 'bg-orange-500 hover:bg-orange-600' : 'bg-slate-900 hover:bg-slate-800'} text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 mt-auto" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
                                 </c:choose>
                             </c:when>
@@ -297,6 +310,32 @@
                 </c:forEach>
             </div>
         </c:if>
+            <c:if test="${totalPages > 1}">
+    <div class="flex justify-center items-center gap-2 mt-12 mb-8">
+        
+        <c:if test="${currentPage > 1}">
+            <a href="properties?page=${currentPage - 1}" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-orange-50 hover:text-orange-600 transition-all shadow-sm">
+                &larr; Prev
+            </a>
+        </c:if>
+        
+        <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+            <c:forEach begin="1" end="${totalPages}" var="i">
+                <a href="properties?page=${i}" 
+                   class="w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-all ${currentPage == i ? 'bg-orange-500 text-white shadow-md' : 'text-slate-600 hover:bg-orange-50 hover:text-orange-600'}">
+                    ${i}
+                </a>
+            </c:forEach>
+        </div>
+        
+        <c:if test="${currentPage < totalPages}">
+            <a href="properties?page=${currentPage + 1}" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-orange-50 hover:text-orange-600 transition-all shadow-sm">
+                Next &rarr;
+            </a>
+        </c:if>
+        
+    </div>
+</c:if>
     </main>
 
     <c:if test="${sessionScope.userRole == 'student' && !hasActiveRental}">
