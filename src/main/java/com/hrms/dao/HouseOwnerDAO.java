@@ -37,7 +37,7 @@ public class HouseOwnerDAO {
             return false;
         }
     }
-
+    
     public HouseOwner getHouseOwnerById(int hoId) {
         HouseOwner owner = null;
         try (Connection conn = DBUtil.getConnection()) {
@@ -61,7 +61,44 @@ public class HouseOwnerDAO {
         }
         return owner;
     }
+    // --- ADD THESE TWO NEW METHODS TO YOUR EXISTING HouseOwnerDAO.java ---
 
+    // 1. Insert a new log when a plan is updated
+    public void logSubscriptionChange(int hoId, String planName, String actionType) {
+        try (java.sql.Connection conn = com.hrms.config.DBUtil.getConnection()) {
+            java.sql.PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO subscription_history (ho_id, plan_name, action_type) VALUES (?, ?, ?)"
+            );
+            ps.setInt(1, hoId);
+            ps.setString(2, planName);
+            ps.setString(3, actionType);
+            ps.executeUpdate();
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
+    }
+
+    // 2. Fetch the history for the JSP table
+    public java.util.List<Object[]> getSubscriptionHistory(int hoId) {
+        java.util.List<Object[]> history = new java.util.ArrayList<>();
+        try (java.sql.Connection conn = com.hrms.config.DBUtil.getConnection()) {
+            java.sql.PreparedStatement ps = conn.prepareStatement(
+                "SELECT plan_name, action_type, transaction_date FROM subscription_history WHERE ho_id = ? ORDER BY transaction_date DESC"
+            );
+            ps.setInt(1, hoId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                history.add(new Object[]{
+                    rs.getString("plan_name"),
+                    rs.getString("action_type"),
+                    rs.getString("transaction_date")
+                });
+            }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
+        return history;
+    }
     public boolean deleteHouseOwnerAccount(int hoId) {
         try (Connection conn = DBUtil.getConnection()) {
             conn.setAutoCommit(false); 

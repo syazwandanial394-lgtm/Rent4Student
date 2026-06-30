@@ -55,7 +55,8 @@
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
-                        <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
+                        <c:when test="${not empty sessionScope.loggedUser.fullName}">${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:when>
+                        <c:otherwise>${sessionScope.loggedUser.username.substring(0,1).toUpperCase()}</c:otherwise>
                     </c:choose>
                 </button>
             </div>
@@ -74,10 +75,11 @@
             <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
                 <div class="flex justify-between items-start mb-8 border-b border-slate-100 pb-6">
                     <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-2xl font-black uppercase shadow-inner overflow-hidden border-2 border-white">
+                        <div class="w-16 h-16 shrink-0 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-2xl font-black uppercase shadow-inner overflow-hidden border-2 border-white">
                             <c:choose>
                                 <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
-                                <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
+                                <c:when test="${not empty sessionScope.loggedUser.fullName}">${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:when>
+                                <c:otherwise>${sessionScope.loggedUser.username.substring(0,1).toUpperCase()}</c:otherwise>
                             </c:choose>
                         </div>
                         <div>
@@ -142,10 +144,11 @@
 
         <div id="profileEditView" class="bg-white rounded-3xl shadow-xl border border-orange-100 p-8 transition-all duration-300 ${param.error == 'true' ? '' : 'hidden'}">
             <div class="flex items-center gap-4 mb-8 border-b border-slate-100 pb-6">
-                <div class="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center text-2xl font-black uppercase shadow-md overflow-hidden">
+                <div class="w-16 h-16 shrink-0 bg-orange-500 text-white rounded-full flex items-center justify-center text-2xl font-black uppercase shadow-md overflow-hidden">
                     <c:choose>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
-                        <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
+                        <c:when test="${not empty sessionScope.loggedUser.fullName}">${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:when>
+                        <c:otherwise>${sessionScope.loggedUser.username.substring(0,1).toUpperCase()}</c:otherwise>
                     </c:choose>
                 </div>
                 <div>
@@ -235,7 +238,8 @@
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
-                        <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
+                        <c:when test="${not empty sessionScope.loggedUser.fullName}">${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:when>
+                        <c:otherwise>${sessionScope.loggedUser.username.substring(0,1).toUpperCase()}</c:otherwise>
                     </c:choose>
                 </div>
                 <div>
@@ -248,9 +252,22 @@
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
             <c:choose>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform hover:scale-[1.02] transition-all duration-200 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> Premium Owner Unlocked
-                    </div>
+                    <a href="subscribe.jsp" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Premium Plan
+                    </a>
+                </c:when>
+                <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Pro'}">
+                    <a href="subscribe.jsp" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-slate-300 to-gray-400 hover:from-gray-100 hover:to-gray-300 text-slate-900 font-black rounded-2xl uppercase tracking-wider text-xs shadow-md border border-slate-300 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Pro Plan
+                    </a>
+                </c:when>
+                <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Standard'}">
+                    <a href="subscribe.jsp" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-white hover:to-slate-100 text-slate-800 font-black rounded-2xl uppercase tracking-wider text-xs shadow-sm border border-slate-200 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-800" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Standard Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Free'}">
                     <a href="subscribe.jsp" class="nav-link flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group mb-2">

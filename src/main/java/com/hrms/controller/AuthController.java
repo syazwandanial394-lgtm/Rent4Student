@@ -99,11 +99,13 @@ public class AuthController extends HttpServlet {
             String role = request.getParameter("role");
             
             if ("admin".equals(role)) {
-                if ("admin@gmail.com".equals(email) && "admin123".equals(password)) {
+                if ("admin@r4s.com".equals(email) && "admin123".equals(password)) {
                     HttpSession session = request.getSession();
                     session.setAttribute("userRole", "admin");
                     session.setAttribute("adminName", "System Administrator");
-                    response.sendRedirect("adminController?action=activityLogs");
+                    
+                    // The bulletproof fix
+                    response.sendRedirect("adminController"); 
                     return;
                 }
             } else if ("student".equals(role)) {

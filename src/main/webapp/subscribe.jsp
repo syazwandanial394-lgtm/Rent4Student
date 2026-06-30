@@ -1,5 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
+<%
+    // BULLETPROOF REDIRECT: If the history data is missing, forcefully bounce 
+    // the user to the Controller so it can fetch the database logs!
+    if (request.getAttribute("subHistory") == null) {
+        response.sendRedirect("subscriptionController");
+        return;
+    }
+%>
+
 <c:if test="${empty sessionScope.userRole || sessionScope.userRole != 'owner'}">
     <c:redirect url="login.jsp"/>
 </c:if>
@@ -19,21 +29,20 @@
         .animate-blob { animation: blob 7s infinite; }
         .animation-delay-2000 { animation-delay: 2s; }
 
-        /* Processing Loader & Modal Animation Styles */
         .loader { border: 4px solid #1e293b; border-top: 4px solid #f97316; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .modal-enter { opacity: 0; transform: scale(0.95); transition: all 0.3s ease-out; }
         .modal-enter-active { opacity: 1; transform: scale(1); }
     </style>
 </head>
-<body class="bg-slate-900 font-sans text-slate-200 min-h-screen flex items-center justify-center relative overflow-x-hidden overflow-y-auto py-12">
+<body class="bg-slate-900 font-sans text-slate-200 min-h-screen flex flex-col relative overflow-x-hidden overflow-y-auto py-12">
     
     <div class="fixed top-20 left-20 w-72 h-72 bg-orange-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob pointer-events-none"></div>
     <div class="fixed bottom-20 right-20 w-72 h-72 bg-blue-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000 pointer-events-none"></div>
     
     <c:set var="currentSub" value="${sessionScope.loggedUser.subscriptionStatus}" />
 
-    <div class="relative z-10 max-w-7xl mx-auto w-full px-6 py-12">
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-6 flex-grow">
         
         <div class="text-center mb-12">
             <h1 class="text-4xl font-black text-white tracking-tight">Manage Subscription</h1>
@@ -42,7 +51,6 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
             
-            <!--STANDARD-->
             <div class="w-full p-8 bg-white/10 backdrop-blur-xl rounded-3xl border ${currentSub == 'Standard' ? 'border-orange-500 shadow-orange-500/20 shadow-2xl scale-105' : 'border-white/20 shadow-xl'} transition-all flex flex-col">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full border border-white mb-4">
@@ -81,7 +89,6 @@
                 </form>
             </div>
                 
-            <!--PRO-->
             <div class="w-full p-8 bg-white/10 backdrop-blur-xl rounded-3xl border ${currentSub == 'Pro' ? 'border-orange-500 shadow-orange-500/20 shadow-2xl scale-105' : 'border-white/20 shadow-xl'} transition-all flex flex-col">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 mb-4 border border-gray-500/50 shadow-[0_0_15px_rgba(192,192,192,0.35)]">
@@ -120,7 +127,6 @@
                 </form>
             </div>
             
-            <!--PREMIUM-->
             <div class="w-full p-8 bg-white/10 backdrop-blur-xl rounded-3xl border ${currentSub == 'Premium' ? 'border-orange-500 shadow-orange-500/20 shadow-2xl scale-105' : 'border-white/20 shadow-xl'} transition-all flex flex-col">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-500/20 mb-4 border border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
@@ -155,10 +161,8 @@
                     </c:choose>
                 </form>
             </div>
-
         </div>
 
-        <!-- Global Action Buttons -->
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 max-w-3xl mx-auto">
             <a href="properties" class="w-full sm:w-64 text-center bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600 text-slate-300 font-bold py-3.5 px-4 rounded-xl transition-all duration-200">
                 Return to Properties
@@ -169,7 +173,6 @@
                     <input type="hidden" name="action" value="free">
                     <input type="hidden" name="hoId" value="${sessionScope.loggedUser.hoId}">
                     
-                    <!-- FIX: Opens the custom modal instead of the browser confirm() -->
                     <button type="button" onclick="openCancelModal()" class="w-full text-center bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 text-red-400 font-bold py-3.5 px-4 rounded-xl transition-all duration-200">
                         Cancel Subscription
                     </button>
@@ -177,9 +180,49 @@
             </c:if>
         </div>
 
+        <div class="mt-16 mb-12 max-w-4xl mx-auto">
+            <div class="bg-slate-800/50 backdrop-blur-md rounded-3xl border border-slate-700 shadow-2xl overflow-hidden">
+                <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-slate-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white tracking-tight">Billing & Plan History</h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/50 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700">
+                                <th class="p-5 font-bold">Date & Time</th>
+                                <th class="p-5 font-bold">Plan Selected</th>
+                                <th class="p-5 font-bold text-right">Action Taken</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700/50 text-sm">
+                            <c:forEach items="${subHistory}" var="log">
+                                <tr class="hover:bg-slate-700/20 transition-colors">
+                                    <td class="p-5 text-slate-300">${log[2]}</td>
+                                    <td class="p-5 font-bold text-white">${log[0]}</td>
+                                    <td class="p-5 text-right">
+                                        <c:choose>
+                                            <c:when test="${log[1] == 'Canceled'}"><span class="bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded-lg font-bold text-xs uppercase">Canceled</span></c:when>
+                                            <c:otherwise><span class="bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded-lg font-bold text-xs uppercase">${log[1]}</span></c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty subHistory}">
+                                <tr>
+                                    <td colspan="3" class="p-8 text-center text-slate-500 italic">No subscription history found.</td>
+                                </tr>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- CUSTOM CANCEL CONFIRMATION MODAL -->
     <div id="cancelModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeCancelModal()"></div>
         <div class="relative bg-slate-800 rounded-3xl border border-slate-700 shadow-2xl p-8 w-full max-w-sm text-center modal-enter" id="cancelContent">
@@ -198,7 +241,6 @@
         </div>
     </div>
         
-    <!--SIMULATE PAYMENT / LOADING -->        
     <div id="processingModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"></div>
         <div class="relative bg-white rounded-3xl border border-slate-200 shadow-2xl p-10 w-full max-w-sm text-center text-slate-800 modal-enter" id="processingContent">
@@ -222,7 +264,6 @@
             }, 2000);
         }
 
-        // Custom Cancel Modal Logic
         function openCancelModal() {
             document.getElementById('cancelModal').classList.remove('hidden');
             setTimeout(() => { document.getElementById('cancelContent').classList.add('modal-enter-active'); }, 10);
@@ -235,9 +276,9 @@
 
         function confirmCancel() {
             closeCancelModal();
-            // Wait slightly for the modal animation to finish before launching the loading screen
             setTimeout(() => {
-                processSubscription('formFree', 'Canceling Subscription...');
+                // FIXED form identifier
+                processSubscription('formCancel', 'Canceling Subscription...');
             }, 300);
         }
     </script>

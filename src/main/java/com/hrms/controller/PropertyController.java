@@ -37,6 +37,25 @@ public class PropertyController extends HttpServlet {
             return;
         }
 
+        String action = request.getParameter("action");
+
+        // ==========================================
+        // NEW CODE: ROUTE FOR QoL PROPERTY REPORT
+        // ==========================================
+        if ("report".equals(action)) {
+            int propertyId = Integer.parseInt(request.getParameter("propertyId"));
+            
+            request.setAttribute("property", propertyDAO.getPropertyById(propertyId)); 
+            request.setAttribute("totalRevenue", propertyDAO.getTotalRevenueForProperty(propertyId));
+            request.setAttribute("totalTenants", propertyDAO.getTotalTenantsForProperty(propertyId));
+            
+            request.getRequestDispatcher("propertyReport.jsp").forward(request, response);
+            return; // Stop execution here so it doesn't load the normal grid
+        }
+
+        // ==========================================
+        // EXISTING CODE: MAIN PROPERTY LISTING LOGIC
+        // ==========================================
         List<Property> propertyList = null;
         boolean hasActiveRental = false; 
         List<Integer> pendingProps = null; 
@@ -85,16 +104,12 @@ public class PropertyController extends HttpServlet {
             }
         }
 
-        // ==========================================
-        // NEW CODE: FETCH ALL PROPERTIES FOR BOTTOM GRID
-        // ==========================================
         if (showingRecommendations) {
             List<Property> allProps = propertyDAO.getAllProperties();
             
             int itemsPerPage = 12;
-            int currentPage = 1; // Default to page 1
+            int currentPage = 1; 
             
-            // 1. Get the requested page from the URL (e.g., properties?page=2)
             String pageParam = request.getParameter("page");
             if (pageParam != null && !pageParam.trim().isEmpty()) {
                 try {
@@ -104,15 +119,12 @@ public class PropertyController extends HttpServlet {
                 }
             }
             
-            // 2. Calculate totals and bounds
             int totalItems = allProps.size();
             int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
             
-            // Safety checks (prevent negative pages or pages beyond the max)
             if (currentPage < 1) currentPage = 1;
             if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
             
-            // 3. Slice the list to only include 12 items for the current page
             int startIndex = (currentPage - 1) * itemsPerPage;
             int endIndex = Math.min(startIndex + itemsPerPage, totalItems);
             
@@ -121,12 +133,10 @@ public class PropertyController extends HttpServlet {
                 paginatedList = allProps.subList(startIndex, endIndex);
             }
             
-            // 4. Send the sliced list and page variables to the JSP
             request.setAttribute("allPropertiesList", paginatedList);
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
         }
-        // ==========================================
 
         request.setAttribute("propertyList", propertyList);
         request.setAttribute("showingRecommendations", showingRecommendations);
@@ -144,7 +154,6 @@ public class PropertyController extends HttpServlet {
 
         String base64Image = null; 
         
-        // FIX: ONLY attempt to process an image upload if the user is Adding or Editing a property!
         if ("addProperty".equals(action) || "updateProperty".equals(action)) {
             try {
                 Part filePart = request.getPart("propertyImage");
@@ -205,7 +214,7 @@ public class PropertyController extends HttpServlet {
                 property.setAvailabilityStatus(request.getParameter("availabilityStatus"));
                 property.setCity(request.getParameter("city"));
                 property.setPostcode(request.getParameter("postcode"));
-                property.setPropertyImage(base64Image); // Will be null if no new image was selected
+                property.setPropertyImage(base64Image); 
 
                 boolean success = propertyDAO.updateProperty(property);
 

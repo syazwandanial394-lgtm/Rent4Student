@@ -1,15 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ page import="com.hrms.dao.AdminDAO" %>
+<%@ page import="com.hrms.dao.ReportDAO" %>
+<%@ page import="com.hrms.model.AdminReport" %>
 <%@ page import="java.util.List" %>
 
 <%
-    AdminDAO dao = new AdminDAO();
-    List<Object[]> allTickets = dao.getAllTickets();
+    // FIXED: Safely using your ReportDAO and AdminReport objects instead of raw arrays!
+    ReportDAO dao = new ReportDAO();
+    List<AdminReport> allTickets = dao.getAllReports();
     int pendingCount = 0;
-    for(Object[] ticket : allTickets) {
-        if("Pending".equals(ticket[4])) { 
-            pendingCount++;
+    
+    if (allTickets != null) {
+        for(AdminReport ticket : allTickets) {
+            if("Pending".equals(ticket.getStatus())) { 
+                pendingCount++;
+            }
         }
     }
     request.setAttribute("pendingCount", pendingCount);

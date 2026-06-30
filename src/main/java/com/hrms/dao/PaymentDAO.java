@@ -99,23 +99,44 @@ public class PaymentDAO {
 
     public List<Receipt> getOwnerReceipts(int hoId) {
         List<Receipt> list = new ArrayList<>();
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "SELECT receipt_id, issue_date, payment_id, payment_method, amount_paid, receipt_status " +
-                         "FROM receipt WHERE ho_id = ? ORDER BY issue_date DESC";
-            PreparedStatement ps = conn.prepareStatement(sql);
+        
+        // THE MULTI-JOIN SQL QUERY
+        // This links Receipt -> Payment -> Rental -> Property & Student
+        String sql = "SELECT rec.*, prop.property_name, s.full_name AS tenant_name " +
+                     "FROM receipt rec " +
+                     "JOIN payment p ON rec.payment_id = p.payment_id " +
+                     "JOIN rental r ON p.rental_id = r.rental_id " +
+                     "JOIN property prop ON r.property_id = prop.property_id " +
+                     "JOIN student s ON r.student_id = s.student_id " +
+                     "WHERE rec.ho_id = ? ORDER BY rec.issue_date DESC";
+
+        try (java.sql.Connection conn = com.hrms.config.DBUtil.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, hoId);
-            ResultSet rs = ps.executeQuery();
+            java.sql.ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                Receipt rec = new Receipt();
-                rec.setReceiptId(rs.getInt("receipt_id"));
-                rec.setIssueDate(rs.getString("issue_date"));
-                rec.setPaymentId(rs.getInt("payment_id"));
-                rec.setPaymentMethod(rs.getString("payment_method"));
-                rec.setAmountPaid(rs.getDouble("amount_paid"));
-                rec.setReceiptStatus(rs.getString("receipt_status"));
-                list.add(rec);
+                Receipt r = new Receipt();
+                r.setReceiptId(rs.getInt("receipt_id"));
+                r.setAmountPaid(rs.getDouble("amount_paid")); // Ensure column name matches phpMyAdmin
+                r.setIssueDate(rs.getString("issue_date"));
+                r.setPaymentMethod(rs.getString("payment_method"));
+                r.setReceiptStatus(rs.getString("receipt_status")); 
+                r.setPaymentId(rs.getInt("payment_id"));            
+                r.setHoId(rs.getInt("ho_id"));
+                
+                // Fetch and set the new QoL fields!
+                r.setPropertyName(rs.getString("property_name"));
+                r.setTenantName(rs.getString("tenant_name"));
+                
+                list.add(r);
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) { 
+            System.out.println("=== SQL ERROR IN GET OWNER RECEIPTS ===");
+            System.out.println(e.getMessage());
+            e.printStackTrace(); 
+        }
         return list;
     }
 }

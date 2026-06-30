@@ -136,30 +136,26 @@
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
             <c:choose>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
-                    <a href="subscribe.jsp" title="Manage Subscription" class="flex w-full items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-amber-500/20 border border-yellow-300/40 transform hover:-translate-y-0.5 transition-all duration-200 hover:shadow-amber-500/40 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
-                        Manage Premium
+                    <a href="subscribe.jsp" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Premium Plan
                     </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Pro'}">
-                    <a href="subscribe.jsp" title="Manage Subscription" class="flex w-full items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-slate-500/20 border border-slate-300/50 transform hover:-translate-y-0.5 transition-all duration-200 hover:shadow-slate-500/40 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                    <a href="subscribe.jsp" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-slate-300 to-gray-400 hover:from-gray-100 hover:to-gray-300 text-slate-900 font-black rounded-2xl uppercase tracking-wider text-xs shadow-md border border-slate-300 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
                         Manage Pro Plan
                     </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Standard'}">
-                    <a href="subscribe.jsp" title="Manage Subscription" class="flex w-full items-center justify-center gap-3 px-6 py-3.5 bg-slate-200 text-slate-900 font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-slate-500/10 border border-slate-300/50 transform hover:-translate-y-0.5 transition-all duration-200 hover:shadow-slate-500/30 hover:bg-slate-300 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
-                        Manage Standard
+                    <a href="subscribe.jsp" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-white hover:to-slate-100 text-slate-800 font-black rounded-2xl uppercase tracking-wider text-xs shadow-sm border border-slate-200 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-800" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Standard Plan
                     </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Free'}">
-                    <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group">
-                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                        </div>
+                    <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
                         <span class="tracking-wide">Upgrade to Premium</span>
                     </a>
                 </c:when>

@@ -19,6 +19,7 @@
         .modal-enter-active { opacity: 1; transform: scale(1); }
         
         /* UPDATED: Bulletproof Print CSS to prevent 2-page blank splits */
+        /* --- STUDENT RECEIPT PRINT CSS --- */
         @media print {
             @page { size: portrait; margin: 1cm; }
             
@@ -38,7 +39,7 @@
                 padding: 0 !important;
             }
 
-            /* Strip the 'fixed' and 'flex' centering off the modal wrapper */
+            /* Strip the 'fixed' centering off the modal wrapper */
             #receiptModal {
                 position: absolute !important;
                 left: 0 !important;

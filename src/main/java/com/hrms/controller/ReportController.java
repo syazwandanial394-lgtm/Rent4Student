@@ -33,17 +33,17 @@ public class ReportController extends HttpServlet {
         }
 
         if ("viewTickets".equals(action)) {
-            String email = "";
+            String username = "";
             if ("student".equals(role)) {
                 Student s = (Student) session.getAttribute("loggedUser");
-                email = s.getEmail();
+                username = s.getUsername();
             } else if ("owner".equals(role)) {
                 HouseOwner ho = (HouseOwner) session.getAttribute("loggedUser");
-                email = ho.getEmail();
+                username = ho.getUsername();
             }
 
-            // Fetch tickets and forward to JSP
-            List<AdminReport> tickets = reportDAO.getReportsByEmail(email);
+            // FIXED: Fetch tickets using Username instead of Email
+            List<AdminReport> tickets = reportDAO.getReportsByUsername(username);
             request.setAttribute("ticketList", tickets);
             request.getRequestDispatcher("tickets.jsp").forward(request, response);
         } else {
@@ -55,29 +55,32 @@ public class ReportController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        if ("submitReport".equals(action)) {
-            String email = request.getParameter("userEmail");
-            String role = request.getParameter("userRole");
+        if ("submitTicket".equals(action)) {
+            // Grab the hidden inputs from the JSP
+            String username = request.getParameter("username");
+            String role = request.getParameter("role");
             String subject = request.getParameter("subject");
-            String description = request.getParameter("description");
+            String message = request.getParameter("message"); 
 
             try (Connection conn = DBUtil.getConnection()) {
+                // FIXED: Insert into the correct table (support_tickets) matching the Admin portal
                 PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO admin_report (user_email, user_role, subject, description) VALUES (?, ?, ?, ?)"
+                    "INSERT INTO support_tickets (sender_name, sender_role, subject, message) VALUES (?, ?, ?, ?)"
                 );
-                ps.setString(1, email);
+                ps.setString(1, username);
                 ps.setString(2, role);
                 ps.setString(3, subject);
-                ps.setString(4, description);
+                ps.setString(4, message);
                 ps.executeUpdate();
                 
-                // Redirect to the tickets page so they can see their new submission
-                response.sendRedirect("reportController?action=viewTickets&success=true");
+                response.sendRedirect("reportController?action=viewTickets&success=created");
                 
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendRedirect("reportController?action=viewTickets&error=true");
             }
+        } else {
+            response.sendRedirect("dashboard");
         }
     }
 }

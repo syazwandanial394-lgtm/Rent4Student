@@ -31,7 +31,6 @@
 <body class="bg-slate-50 font-sans text-slate-800 min-h-screen relative overflow-x-hidden overflow-y-scroll">
     <div class="absolute top-0 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
 
-    <!-- Navigation -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm relative z-[60]">
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -76,21 +75,30 @@
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-100 text-xs font-black text-slate-500 uppercase tracking-wider">
-                            <th class="p-6">Receipt ID</th>
+                            <th class="p-6">Receipt / Property Info</th>
                             <th class="p-6">Issue Date</th>
                             <th class="p-6">Payment Ref #</th>
                             <th class="p-6">Method</th>
-                            <th class="p-6">Amount Received</th>
+                            <th class="p-6 text-right">Amount Received</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <c:forEach items="${receiptList}" var="rec">
                             <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="p-6 font-bold text-slate-900 whitespace-nowrap">RCPT-${rec.receiptId}</td>
-                                <td class="p-6 text-slate-600">${rec.issueDate}</td>
-                                <td class="p-6 text-slate-500">PAY-${rec.paymentId}</td>
-                                <td class="p-6 text-slate-600">${rec.paymentMethod}</td>
-                                <td class="p-6 font-black text-green-600 whitespace-nowrap">RM ${rec.amountPaid}</td>
+                                <td class="p-6">
+                                    <span class="inline-block bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-1 rounded-md mb-2 tracking-widest border border-slate-200">RCPT-${rec.receiptId}</span>
+                                    <p class="font-bold text-slate-900 truncate max-w-xs" title="${rec.propertyName}">${rec.propertyName}</p>
+                                    <p class="text-xs text-slate-500 font-medium mt-1 truncate max-w-xs"><span class="font-bold text-slate-400">PAID BY:</span> ${rec.tenantName}</p>
+                                </td>
+                                
+                                <td class="p-6 text-slate-600 font-medium">${rec.issueDate}</td>
+                                <td class="p-6 text-slate-500 font-medium">PAY-${rec.paymentId}</td>
+                                <td class="p-6 text-slate-600 font-medium">
+                                    <span class="inline-flex items-center gap-1.5 border border-slate-200 bg-white px-3 py-1 rounded-lg text-xs shadow-sm">
+                                        <div class="w-2 h-2 rounded-full bg-emerald-500"></div> ${rec.paymentMethod}
+                                    </span>
+                                </td>
+                                <td class="p-6 font-black text-emerald-600 text-right text-lg whitespace-nowrap">RM ${rec.amountPaid}</td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty receiptList}">
@@ -107,7 +115,6 @@
         </div>
     </main>
 
-    <!-- PROFILE DRAWER -->
     <div id="profileBackdrop" onclick="toggleProfileDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300 print-hide"></div>
     <div id="profileDrawer" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-100 print-hide">
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-start">
@@ -127,38 +134,28 @@
         </div>
         
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
-            <c:choose >
+            <c:choose>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Premium Owner Unlocked
-                    </div>
+                    <a href="subscriptionController" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Premium Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Pro'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-600 text-slate-950 font-white rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-silver-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Pro Owner Unlocked
-                    </div>
+                    <a href="subscriptionController" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-slate-300 to-gray-400 hover:from-gray-100 hover:to-gray-300 text-slate-900 font-black rounded-2xl uppercase tracking-wider text-xs shadow-md border border-slate-300 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Pro Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Standard'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-glate-800 to-gray-200 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-slate-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Standard Ownership
-                    </div>
+                    <a href="subscriptionController" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-white hover:to-slate-100 text-slate-800 font-black rounded-2xl uppercase tracking-wider text-xs shadow-sm border border-slate-200 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-800" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Standard Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Free'}">
-                    <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group">
-                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                        </div>
+                    <a href="subscriptionController" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
                         <span class="tracking-wide">Upgrade to Premium</span>
                     </a>
                 </c:when>

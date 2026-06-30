@@ -8,6 +8,8 @@ public class Receipt {
     private String paymentMethod;
     private int paymentId;
     private int hoId;
+    private String propertyName;
+    private String tenantName;
 
     public Receipt() {}
 
@@ -31,4 +33,10 @@ public class Receipt {
     
     public int getHoId() { return hoId; }
     public void setHoId(int hoId) { this.hoId = hoId; }
+    
+    public String getPropertyName() { return propertyName; }
+    public void setPropertyName(String propertyName) { this.propertyName = propertyName; }
+
+    public String getTenantName() { return tenantName; }
+    public void setTenantName(String tenantName) { this.tenantName = tenantName; }
 }

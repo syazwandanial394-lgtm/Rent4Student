@@ -150,31 +150,36 @@
                     data-city="<c:out value='${property.city}'/>"
                     data-postcode="${property.postcode}"
                     data-image="${property.propertyImage}"
-                    class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
+                    class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
                     <c:if test="${showingRecommendations}">
                         <div class="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full z-10 shadow-sm flex items-center gap-1">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg> Match
                         </div>
                     </c:if>
-                    <div class="h-48 bg-slate-200 relative">
+                    <div class="h-48 bg-slate-200 relative shrink-0">
                         <img src="${not empty property.propertyImage ? property.propertyImage : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover" alt="House">
                         <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black uppercase shadow-sm ${property.availabilityStatus == 'Available' ? 'text-green-600' : 'text-red-600'}">${property.availabilityStatus}</div>
                     </div>
-                    <div class="p-6">
+                    <div class="p-6 flex-grow flex flex-col">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="text-xl font-bold text-slate-900 leading-tight truncate pr-2">${property.propertyName}</h3>
                             <span class="text-orange-600 font-black text-lg w-24 text-right shrink-0">RM ${property.rentalRate}</span>
                         </div>
-                        <span class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md mb-2">${property.propertyType}</span>
+                        <span class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md mb-2 w-max">${property.propertyType}</span>
                         <p class="text-slate-600 text-sm mb-4 line-clamp-2">${property.description}</p>
-                        <p class="text-slate-500 text-sm mb-4 flex items-center gap-1 font-semibold">
+                        <p class="text-slate-500 text-sm mb-6 flex items-center gap-1 font-semibold mt-auto">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${property.city}, ${property.postcode}
                         </p>
                         <c:choose>
                             <c:when test="${sessionScope.userRole == 'owner'}">
-                                <div class="flex gap-2">
+                                <div class="flex items-stretch gap-2 mt-auto">
+                                    <a href="properties?action=report&propertyId=${property.propertyId}" onclick="event.stopPropagation();" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-1.5 shadow-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        Report
+                                    </a>
+                                    
                                     <button type="button" 
-                                            onclick="openEditPropModal(this)"
+                                            onclick="event.stopPropagation(); openEditPropModal(this)"
                                             data-id="${property.propertyId}"
                                             data-name="<c:out value='${property.propertyName}'/>"
                                             data-type="${property.propertyType}"
@@ -184,11 +189,11 @@
                                             data-address="<c:out value='${property.address}'/>"
                                             data-desc="<c:out value='${property.description}'/>"
                                             data-status="${property.availabilityStatus}"
-                                            class="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors text-sm">
-                                        Edit Listing
+                                            class="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-2.5 rounded-xl transition-colors text-sm flex items-center justify-center shadow-sm">
+                                        Edit
                                     </button>
                                     
-                                    <button type="button" onclick="openDeleteModal('${property.propertyId}')" class="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-colors flex items-center justify-center" title="Delete Property">
+                                    <button type="button" onclick="event.stopPropagation(); openDeleteModal('${property.propertyId}')" class="w-12 bg-red-50 hover:bg-red-100 text-red-500 py-2.5 rounded-xl transition-colors flex items-center justify-center shrink-0 shadow-sm" title="Delete Property">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
@@ -199,7 +204,7 @@
                                 <c:choose>
                                     <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed">Currently Rented</button></c:when>
                                     <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed">Application Pending</button></c:when>
-                                    <c:otherwise><button type="button" onclick="openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')" class="w-full ${showingRecommendations ? 'bg-orange-500 hover:bg-orange-600' : 'bg-slate-900 hover:bg-slate-800'} text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
+                                    <c:otherwise><button type="button" onclick="event.stopPropagation(); openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')" class="w-full ${showingRecommendations ? 'bg-orange-500 hover:bg-orange-600' : 'bg-slate-900 hover:bg-slate-800'} text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 mt-auto" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
                                 </c:choose>
                             </c:when>
                         </c:choose>
@@ -231,46 +236,59 @@
                         data-city="<c:out value='${property.city}'/>"
                         data-postcode="${property.postcode}"
                         data-image="${property.propertyImage}"
-                        class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
+                        class="cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm border ${showingRecommendations ? 'border-orange-200 shadow-md' : 'border-slate-100'} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative">
                         
-                        <div class="h-48 bg-slate-200 relative">
+                        <div class="h-48 bg-slate-200 relative shrink-0">
                             <img src="${not empty property.propertyImage ? property.propertyImage : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover" alt="House">
                             <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black uppercase shadow-sm ${property.availabilityStatus == 'Available' ? 'text-green-600' : 'text-red-600'}">${property.availabilityStatus}</div>
                         </div>
                         
-                        <div class="p-6">
+                        <div class="p-6 flex-grow flex flex-col">
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="text-xl font-bold text-slate-900 leading-tight truncate pr-2">${property.propertyName}</h3>
                                 <span class="text-orange-600 font-black text-lg w-24 text-right shrink-0">RM ${property.rentalRate}</span>
                             </div>
-                            <span class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md mb-2">${property.propertyType}</span>
+                            <span class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md mb-2 w-max">${property.propertyType}</span>
                             <p class="text-slate-600 text-sm mb-4 line-clamp-2">${property.description}</p>
-                            <p class="text-slate-500 text-sm mb-4 flex items-center gap-1 font-semibold">
+                            <p class="text-slate-500 text-sm mb-6 flex items-center gap-1 font-semibold mt-auto">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${property.city}, ${property.postcode}
                             </p>
                             
                             <c:choose>
                                 <c:when test="${sessionScope.userRole == 'owner'}">
-                                    <button type="button" 
-                                            onclick="event.stopPropagation(); openEditPropModal(this)"
-                                            data-id="${property.propertyId}"
-                                            data-name="<c:out value='${property.propertyName}'/>"
-                                            data-type="${property.propertyType}"
-                                            data-rate="${property.rentalRate}"
-                                            data-city="<c:out value='${property.city}'/>"
-                                            data-postcode="${property.postcode}"
-                                            data-address="<c:out value='${property.address}'/>"
-                                            data-desc="<c:out value='${property.description}'/>"
-                                            data-status="${property.availabilityStatus}"
-                                            class="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl transition-colors">
-                                        Edit Listing
-                                    </button>
+                                    <div class="flex items-stretch gap-2 mt-auto">
+                                        <a href="properties?action=report&propertyId=${property.propertyId}" onclick="event.stopPropagation();" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-1.5 shadow-sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            Report
+                                        </a>
+                                        
+                                        <button type="button" 
+                                                onclick="event.stopPropagation(); openEditPropModal(this)"
+                                                data-id="${property.propertyId}"
+                                                data-name="<c:out value='${property.propertyName}'/>"
+                                                data-type="${property.propertyType}"
+                                                data-rate="${property.rentalRate}"
+                                                data-city="<c:out value='${property.city}'/>"
+                                                data-postcode="${property.postcode}"
+                                                data-address="<c:out value='${property.address}'/>"
+                                                data-desc="<c:out value='${property.description}'/>"
+                                                data-status="${property.availabilityStatus}"
+                                                class="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-2.5 rounded-xl transition-colors text-sm flex items-center justify-center shadow-sm">
+                                            Edit
+                                        </button>
+                                        
+                                        <button type="button" onclick="event.stopPropagation(); openDeleteModal('${property.propertyId}')" class="w-12 bg-red-50 hover:bg-red-100 text-red-500 py-2.5 rounded-xl transition-colors flex items-center justify-center shrink-0 shadow-sm" title="Delete Property">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </c:when>
                                 <c:when test="${sessionScope.userRole == 'student'}">
                                     <c:choose>
-                                        <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed">Currently Rented</button></c:when>
-                                        <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed">Application Pending</button></c:when>
-                                        <c:otherwise><button type="button" onclick="event.stopPropagation(); openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')", '<c:out value='${property.propertyName}'/>')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
+                                        <c:when test="${hasActiveRental}"><button type="button" disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed mt-auto">Currently Rented</button></c:when>
+                                        <c:when test="${pendingProps.contains(property.propertyId)}"><button type="button" disabled class="w-full bg-yellow-50 text-yellow-600 border border-yellow-200 font-bold py-3 rounded-xl cursor-not-allowed mt-auto">Application Pending</button></c:when>
+                                        <c:otherwise><button type="button" onclick="event.stopPropagation(); openModal('${property.propertyId}', '<c:out value='${property.propertyName}'/>')" class="w-full ${showingRecommendations ? 'bg-orange-500 hover:bg-orange-600' : 'bg-slate-900 hover:bg-slate-800'} text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 mt-auto" ${property.availabilityStatus == 'Available' ? '' : 'disabled'}>Apply Now</button></c:otherwise>
                                     </c:choose>
                                 </c:when>
                             </c:choose>
@@ -346,10 +364,8 @@
                 const modal = document.getElementById('detailsModal');
                 const modalContent = document.getElementById('detailsModalContent');
 
-                // If the user isn't a student, the modal won't exist in the DOM. Just return.
                 if (!modal) return;
 
-                // 1. Extract data from the clicked card
                 const name = card.getAttribute('data-name');
                 const desc = card.getAttribute('data-desc');
                 const rate = card.getAttribute('data-rate');
@@ -358,11 +374,9 @@
                 const city = card.getAttribute('data-city');
                 const postcode = card.getAttribute('data-postcode');
 
-                // Fallback to a placeholder if no image exists
                 const rawImage = card.getAttribute('data-image');
                 const image = (rawImage && rawImage.trim() !== '') ? rawImage : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800';
 
-                // 2. Inject data into the modal elements
                 document.getElementById('modalName').textContent = name;
                 document.getElementById('modalDesc').textContent = desc || 'No description provided by the owner.';
                 document.getElementById('modalRate').textContent = rate;
@@ -370,16 +384,13 @@
                 document.getElementById('modalAddress').textContent = address + ', ' + postcode + ' ' + city;
                 document.getElementById('modalImage').src = image;
 
-                // 3. Show the modal with a smooth fade-in
                 modal.classList.remove('hidden');
 
-                // Slight delay to allow display:block to apply before animating opacity
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
                     modalContent.classList.remove('scale-95');
                 }, 10);
 
-                // Lock the background body scrolling
                 document.body.style.overflow = 'hidden';
             }
 
@@ -388,20 +399,17 @@
                 const modalContent = document.getElementById('detailsModalContent');
 
                 if (modal) {
-                    // Trigger fade out animations
                     modal.classList.add('opacity-0');
                     modalContent.classList.add('scale-95');
 
-                    // Wait for animation to finish before hiding completely
                     setTimeout(() => {
                         modal.classList.add('hidden');
-                        document.body.style.overflow = 'auto'; // Unlock scrolling
+                        document.body.style.overflow = 'auto';
                     }, 300);
                 }
             }
         </script>
-    </c:if>    
-        
+    </c:if>   
         
     <c:if test="${sessionScope.userRole == 'owner'}">
         <c:set var="subStatus" value="${sessionScope.loggedUser.subscriptionStatus}" />
@@ -594,7 +602,8 @@
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'admin'}">A</c:when>
                         <c:when test="${not empty sessionScope.loggedUser.profileImage}"><img src="${sessionScope.loggedUser.profileImage}" class="w-full h-full object-cover" alt="Profile"></c:when>
-                        <c:otherwise>${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:otherwise>
+                        <c:when test="${not empty sessionScope.loggedUser.fullName}">${sessionScope.loggedUser.fullName.substring(0,1).toUpperCase()}</c:when>
+                        <c:otherwise>${sessionScope.loggedUser.username.substring(0,1).toUpperCase()}</c:otherwise>
                     </c:choose>
                 </div>
                 <div>
@@ -605,59 +614,56 @@
             <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         <div class="p-4 flex-1 flex flex-col gap-2 overflow-y-auto">
-            <c:choose >
+            <c:choose>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Premium'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Premium Owner Unlocked
-                    </div>
+                    <a href="subscriptionController" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-amber-500/20 border border-yellow-300/40 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Premium Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Pro'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-600 text-slate-950 font-white rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-silver-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Pro Owner Unlocked
-                    </div>
+                    <a href="subscriptionController" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-slate-300 to-gray-400 hover:from-gray-100 hover:to-gray-300 text-slate-900 font-black rounded-2xl uppercase tracking-wider text-xs shadow-md border border-slate-300 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Pro Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Standard'}">
-                    <div class="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-gray-200 via-glate-800 to-gray-200 text-slate-950 font-black rounded-2xl uppercase tracking-wider text-xs shadow-xl shadow-slate-500/20 border border-yellow-300/40 transform transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                        </svg>
-                        Standard Ownership
-                    </div>
+                    <a href="subscriptionController" class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-white hover:to-slate-100 text-slate-800 font-black rounded-2xl uppercase tracking-wider text-xs shadow-sm border border-slate-200 transform hover:scale-[1.02] transition-all duration-200 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-800" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg> 
+                        Manage Standard Plan
+                    </a>
                 </c:when>
                 <c:when test="${sessionScope.userRole == 'owner' and sessionScope.loggedUser.subscriptionStatus == 'Free'}">
-                    <a href="subscribe.jsp" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group">
-                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                        </div>
+                    <a href="subscriptionController" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transform hover:-translate-y-0.5 group mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 text-white group-hover:bg-white group-hover:text-orange-600 flex items-center justify-center transition-all duration-200"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
                         <span class="tracking-wide">Upgrade to Premium</span>
                     </a>
                 </c:when>
             </c:choose>
+
             <a href="profileController" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div> My Profile Settings
             </a>
+            
             <c:if test="${sessionScope.userRole == 'owner'}">
                 <a href="properties" class="flex items-center gap-3 p-3 rounded-xl bg-orange-50 text-orange-600 font-bold transition-all group">
                     <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-500 flex items-center justify-center transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     </div> My Properties
                 </a>
+            </c:if>
+            
+            <c:if test="${sessionScope.userRole == 'owner'}">
                 <a href="rentalController?action=duePayments" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                     <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div> Due Payments
                 </a>
             </c:if>
+            
             <a href="reportController?action=viewTickets" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold transition-all group">
                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg></div> My Support Tickets
             </a>
         </div>
+        
         <div class="p-6 border-t border-slate-100 bg-slate-50">
             <form id="logoutFormDrawer" action="auth" method="POST" class="m-0">
                 <input type="hidden" name="action" value="logout">
@@ -665,7 +671,7 @@
             </form>
         </div>
     </div>
-    
+
     <script>
         function toggleProfileDrawer() {
             const drawer = document.getElementById('profileDrawer');

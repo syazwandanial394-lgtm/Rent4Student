@@ -184,4 +184,76 @@ public class PropertyDAO {
             return false;
         }
     }
+
+    // ==========================================
+    // NEW METHODS FOR QoL PROPERTY REPORT
+    // ==========================================
+
+    // Fetch a single property details
+    public Property getPropertyById(int id) {
+        Property p = null;
+        try (Connection conn = DBUtil.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM property WHERE property_id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                p = new Property();
+                p.setPropertyId(rs.getInt("property_id"));
+                p.setPropertyName(rs.getString("property_name"));
+                p.setPropertyType(rs.getString("property_type"));
+                p.setAddress(rs.getString("address"));
+                p.setDescription(rs.getString("description"));
+                p.setCity(rs.getString("city"));
+                p.setPostcode(rs.getString("postcode"));
+                p.setRentalRate(rs.getDouble("rental_rate"));
+                p.setAvailabilityStatus(rs.getString("availability_status"));
+                p.setPropertyImage(rs.getString("property_image"));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return p;
+    }
+
+    // Calculate Total Revenue for a single property
+    public double getTotalRevenueForProperty(int propertyId) {
+        double total = 0.0;
+        try (Connection conn = DBUtil.getConnection();
+             // We removed the strict 'status' check to ensure NO payments are accidentally hidden.
+             // As long as the payment is linked to the rental, it will be counted!
+             PreparedStatement ps = conn.prepareStatement(
+                 "SELECT SUM(amount) AS total_revenue FROM payment WHERE rental_id IN (SELECT rental_id FROM rental WHERE property_id = ?)"
+             )) {
+            ps.setInt(1, propertyId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                // We use getDouble, but if SUM returns NULL (no payments), it safely defaults to 0.0
+                total = rs.getDouble("total_revenue");
+            }
+        } catch (Exception e) { 
+            System.out.println("=== SQL ERROR IN REVENUE CALCULATION ===");
+            System.out.println(e.getMessage());
+        }
+        return total;
+    }
+
+    // Count Total Unique Tenants for a single property
+    public int getTotalTenantsForProperty(int propertyId) {
+        int count = 0;
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 // FIXED: Changed 'rentals' to 'rental'
+                 "SELECT COUNT(DISTINCT student_id) AS total_tenants FROM rental WHERE property_id = ?"
+             )) {
+            ps.setInt(1, propertyId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("total_tenants");
+            }
+        } catch (Exception e) { 
+            System.out.println("=== SQL ERROR IN TENANT COUNT ===");
+            System.out.println(e.getMessage());
+        }
+        return count;
+    
+    }
 }

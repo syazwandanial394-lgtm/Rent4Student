@@ -10,25 +10,26 @@ import java.util.List;
 
 public class ReportDAO {
     
-    // Method 1: Fetch reports for a specific user (Used by Student/House Owner)
-    public List<AdminReport> getReportsByEmail(String email) {
+    // FIXED: Query support_tickets by sender_name (username)
+    public List<AdminReport> getReportsByUsername(String username) {
         List<AdminReport> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                "SELECT * FROM admin_report WHERE user_email = ? ORDER BY submitted_at DESC"
+                "SELECT * FROM support_tickets WHERE sender_name = ? ORDER BY created_at DESC"
             );
-            ps.setString(1, email);
+            ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 AdminReport r = new AdminReport();
-                r.setReportId(rs.getInt("report_id"));
-                r.setUserEmail(rs.getString("user_email"));
-                r.setUserRole(rs.getString("user_role"));
+                // We map the support_tickets columns to your AdminReport object!
+                r.setReportId(rs.getInt("ticket_id"));
+                r.setUserEmail(rs.getString("sender_name")); 
+                r.setUserRole(rs.getString("sender_role"));
                 r.setSubject(rs.getString("subject"));
-                r.setDescription(rs.getString("description"));
+                r.setDescription(rs.getString("message"));
                 r.setStatus(rs.getString("status"));
-                r.setSubmittedAt(rs.getString("submitted_at"));
-                r.setAdminResponse(rs.getString("admin_response"));
+                r.setSubmittedAt(rs.getString("created_at"));
+                r.setAdminResponse(rs.getString("remarks"));
                 list.add(r);
             }
         } catch (Exception e) {
@@ -37,24 +38,24 @@ public class ReportDAO {
         return list;
     }
 
-    // Method 2: Fetch ALL reports (Used by Admin Dashboard)
+    // FIXED: Read all tickets from the correct table
     public List<AdminReport> getAllReports() {
         List<AdminReport> list = new ArrayList<>();
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                "SELECT * FROM admin_report ORDER BY submitted_at DESC"
+                "SELECT * FROM support_tickets ORDER BY created_at DESC"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 AdminReport r = new AdminReport();
-                r.setReportId(rs.getInt("report_id"));
-                r.setUserEmail(rs.getString("user_email"));
-                r.setUserRole(rs.getString("user_role"));
+                r.setReportId(rs.getInt("ticket_id"));
+                r.setUserEmail(rs.getString("sender_name"));
+                r.setUserRole(rs.getString("sender_role"));
                 r.setSubject(rs.getString("subject"));
-                r.setDescription(rs.getString("description"));
+                r.setDescription(rs.getString("message"));
                 r.setStatus(rs.getString("status"));
-                r.setSubmittedAt(rs.getString("submitted_at"));
-                r.setAdminResponse(rs.getString("admin_response"));
+                r.setSubmittedAt(rs.getString("created_at"));
+                r.setAdminResponse(rs.getString("remarks"));
                 list.add(r);
             }
         } catch (Exception e) {
@@ -63,11 +64,11 @@ public class ReportDAO {
         return list;
     }
 
-    // Method 3: Update a report with Admin's response
+    // FIXED: Ensure any updates hit the right table
     public boolean updateReportResponse(int reportId, String responseText) {
         try (Connection conn = DBUtil.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                "UPDATE admin_report SET admin_response = ?, status = 'Resolved' WHERE report_id = ?"
+                "UPDATE support_tickets SET remarks = ?, status = 'Resolved' WHERE ticket_id = ?"
             );
             ps.setString(1, responseText);
             ps.setInt(2, reportId);
